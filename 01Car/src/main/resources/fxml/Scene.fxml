@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="314.0" prefWidth="516.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="xyz.joestr.school._5bhif.pos1._01car.FXMLController">
+    <children>
+        <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
+      <MenuBar prefHeight="25.0" prefWidth="117.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Car">
+            <items>
+              <MenuItem id="menu-car_menuitem-insert" fx:id="menu_car_menuitem_insert" mnemonicParsing="false" onAction="#onActionMenuCarMenuItemInsert" text="Insert" />
+                  <MenuItem id="menu-car_menuitem-delete" fx:id="menu_car_menuitem_delete" mnemonicParsing="false" onAction="#onActionMenuCarMenuItemDelete" text="Delete" />
+                  <MenuItem id="menu-car_menuitem-update" fx:id="menu_car_menuitem_update" mnemonicParsing="false" onAction="#onActionMenuCarMenuItemUpdate" text="Update" />
+                  <MenuItem id="menu-car_menuitem-replace" fx:id="menu_car_menuitem_replace" mnemonicParsing="false" onAction="#onActionMenuCarMenuItemReplace" text="Replace" />
+                  <MenuItem id="menu-car_menuitem-findall" fx:id="menu_car_menuitem_findall" mnemonicParsing="false" onAction="#onActionMenuCarMenuItemFindAll" text="find all" />
+                  <MenuItem id="menu-car_menuitem-findrelevance" fx:id="menu_car_menuitem_findrelevance" mnemonicParsing="false" onAction="#onActionMenuCarMenuItemFindRelevance" text="find relevance" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Database">
+            <items>
+              <MenuItem fx:id="menu_database_menuitem_connect" mnemonicParsing="false" onAction="#onActionMenuDatabaseMenuItemConnect" text="Connect" />
+                  <MenuItem fx:id="menu_database_menuitem_close" mnemonicParsing="false" onAction="#onActionMenuDatabaseMenuItemConnect" text="Close" />
+                  <MenuItem fx:id="menu_database_menuitem_createtextindex" mnemonicParsing="false" onAction="#onActionMenuDatabaseMenuItemCreateTextIndex" text="Create Text Index" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <TextField id="textfield_connection-ip" fx:id="textfield_database_ip" layoutX="127.0" prefHeight="25.0" prefWidth="218.0" text="127.0.0.1" />
+      <TextField id="textfield_car-name" fx:id="textfield_car_name" layoutX="14.0" layoutY="49.0" />
+      <TextField id="textfield_car-productionyear" fx:id="textfield_car_productionyear" layoutX="161.0" layoutY="49.0" />
+      <TextField id="textfield_car-kw" fx:id="textfield_car_kw" layoutX="310.0" layoutY="49.0" />
+      <ListView id="listview_car-list" layoutX="14.0" layoutY="86.0" prefHeight="200.0" prefWidth="447.0" />
+    </children>
+</AnchorPane>
