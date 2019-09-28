@@ -8,10 +8,14 @@ import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.bson.types.ObjectId;
 import xyz.joestr.school._5bhif.pos1._01car.classes.Car;
@@ -66,6 +70,12 @@ public class FXMLController {
 
     @FXML // fx:id="textfield_car_kw"
     private TextField textfield_car_kw; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="textarea_car_description"
+    private TextArea textarea_car_description; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="listview_cars"
+    private ListView<Car> listview_cars; // Value injected by FXMLLoader
 
     @FXML
     void onActionMenuCarMenuItemDelete(ActionEvent event) {
@@ -74,7 +84,8 @@ public class FXMLController {
 
     @FXML
     void onActionMenuCarMenuItemFindAll(ActionEvent event) {
-        db.getAllCars();
+        cars.setAll(db.getAllCars());
+        
     }
 
     @FXML
@@ -88,7 +99,7 @@ public class FXMLController {
             textfield_car_name.getText(),
             Integer.parseInt(textfield_car_productionyear.getText()),
             Integer.parseInt(textfield_car_kw.getText()),
-            ""
+            textarea_car_description.getText()
         );
         db.insertCart(c);
     }
@@ -129,8 +140,14 @@ public class FXMLController {
         assert textfield_car_name != null : "fx:id=\"textfield_car_name\" was not injected: check your FXML file 'Scene.fxml'.";
         assert textfield_car_productionyear != null : "fx:id=\"textfield_car_productionyear\" was not injected: check your FXML file 'Scene.fxml'.";
         assert textfield_car_kw != null : "fx:id=\"textfield_car_kw\" was not injected: check your FXML file 'Scene.fxml'.";
+        assert listview_cars != null : "fx:id=\"listview_cars\" was not injected: check your FXML file 'Scene.fxml'.";
+        assert textarea_car_description != null : "fx:id=\"textarea_car_description\" was not injected: check your FXML file 'Scene.fxml'.";
+        
+        this.listview_cars = new ListView<>(cars);
     }
     
     MongoClient mc;
     Database db;
+    private ObservableList<Car> cars = FXCollections
+      .observableArrayList();
 }
