@@ -57,15 +57,12 @@ public class Database {
     
     public Collection<Car> getAllCars() {
         
-        MongoCollection mc = mongoDatabase.getCollection("Cars");
-        
-
-        MongoCursor iterator = mc.find().iterator();
+        MongoCollection<Document> mc = mongoDatabase.getCollection("Cars");
         
         Collection<Car> r = new ArrayList<>();
         
-        while(iterator.hasNext()) {
-            r.add(new Gson().fromJson((((Document) iterator.next()).toJson()), Car.class));
+        for(Document doc : mc.find()) {
+             r.add(new Gson().fromJson((doc.toJson()), Car.class));
         }
         
         return r;
