@@ -5,13 +5,15 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="314.0" prefWidth="516.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="xyz.joestr.school._5bhif.pos1._01car.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="453.0" prefWidth="796.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.joestr.school._5bhif.pos1._01car.FXMLController">
     <children>
         <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
-      <MenuBar prefHeight="25.0" prefWidth="117.0">
+      <MenuBar prefHeight="25.0" prefWidth="954.0">
         <menus>
           <Menu mnemonicParsing="false" text="Car">
             <items>
@@ -32,10 +34,12 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TextField id="textfield_connection-ip" fx:id="textfield_database_ip" layoutX="127.0" prefHeight="25.0" prefWidth="218.0" text="127.0.0.1" />
-      <TextField id="textfield_car-name" fx:id="textfield_car_name" layoutX="14.0" layoutY="49.0" />
-      <TextField id="textfield_car-productionyear" fx:id="textfield_car_productionyear" layoutX="161.0" layoutY="49.0" />
-      <TextField id="textfield_car-kw" fx:id="textfield_car_kw" layoutX="310.0" layoutY="49.0" />
-      <ListView id="listview_car-list" layoutX="14.0" layoutY="86.0" prefHeight="200.0" prefWidth="447.0" />
+      <TextField id="textfield_connection-ip" fx:id="textfield_database_ip" layoutX="39.0" layoutY="39.0" prefHeight="25.0" prefWidth="149.0" promptText="Database IP" text="127.0.0.1" />
+      <TextField id="textfield_car-name" fx:id="textfield_car_name" layoutX="39.0" layoutY="75.0" promptText="Car name" />
+      <TextField id="textfield_car-productionyear" fx:id="textfield_car_productionyear" layoutX="39.0" layoutY="108.0" promptText="Car productionyear" />
+      <TextField id="textfield_car-kw" fx:id="textfield_car_kw" layoutX="39.0" layoutY="137.0" promptText="Car horsepower" />
+      <ListView id="listview_car-list" fx:id="listview_cars" layoutX="323.0" layoutY="37.0" prefHeight="403.0" prefWidth="609.0" />
+      <TextArea fx:id="textarea_car_description" layoutX="39.0" layoutY="171.0" prefHeight="155.0" prefWidth="261.0" promptText="Car description" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
     </children>
 </AnchorPane>
