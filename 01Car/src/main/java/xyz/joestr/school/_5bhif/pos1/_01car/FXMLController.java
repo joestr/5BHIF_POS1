@@ -17,12 +17,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import org.bson.types.ObjectId;
 import xyz.joestr.school._5bhif.pos1._01car.classes.Car;
 import xyz.joestr.school._5bhif.pos1._01car.classes.Database;
 
 public class FXMLController {
-
+    
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
@@ -76,6 +77,9 @@ public class FXMLController {
     
     @FXML // fx:id="listview_cars"
     private ListView<Car> listview_cars; // Value injected by FXMLLoader
+    
+    @FXML
+    private Text text_label;
 
     @FXML
     void onActionMenuCarMenuItemDelete(ActionEvent event) {
@@ -85,7 +89,7 @@ public class FXMLController {
     @FXML
     void onActionMenuCarMenuItemFindAll(ActionEvent event) {
         cars.setAll(db.getAllCars());
-        
+        this.text_label.setText("Loaded all elements from database!");
     }
 
     @FXML
@@ -102,6 +106,7 @@ public class FXMLController {
             textarea_car_description.getText()
         );
         db.insertCart(c);
+        this.text_label.setText("Inserted " + c.toLongString());
     }
 
     @FXML
@@ -117,37 +122,21 @@ public class FXMLController {
     @FXML
     void onActionMenuDatabaseMenuItemConnect(ActionEvent event) throws Exception {
         db = Database.getInstance(textfield_database_ip.getText());
+        this.text_label.setText("Successfully connected to database!");
     }
 
     @FXML
     void onActionMenuDatabaseMenuItemCreateTextIndex(ActionEvent event) {
 
     }
-
-    @FXML // This method is called by the FXMLLoader when initialization is complete
-    void initialize() {
-        assert label != null : "fx:id=\"label\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert menu_car_menuitem_insert != null : "fx:id=\"menu_car_menuitem_insert\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert menu_car_menuitem_delete != null : "fx:id=\"menu_car_menuitem_delete\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert menu_car_menuitem_update != null : "fx:id=\"menu_car_menuitem_update\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert menu_car_menuitem_replace != null : "fx:id=\"menu_car_menuitem_replace\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert menu_car_menuitem_findall != null : "fx:id=\"menu_car_menuitem_findall\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert menu_car_menuitem_findrelevance != null : "fx:id=\"menu_car_menuitem_findrelevance\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert menu_database_menuitem_connect != null : "fx:id=\"menu_database_menuitem_connect\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert menu_database_menuitem_close != null : "fx:id=\"menu_database_menuitem_close\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert menu_database_menuitem_createtextindex != null : "fx:id=\"menu_database_menuitem_createtextindex\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert textfield_database_ip != null : "fx:id=\"textfield_database_ip\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert textfield_car_name != null : "fx:id=\"textfield_car_name\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert textfield_car_productionyear != null : "fx:id=\"textfield_car_productionyear\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert textfield_car_kw != null : "fx:id=\"textfield_car_kw\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert listview_cars != null : "fx:id=\"listview_cars\" was not injected: check your FXML file 'Scene.fxml'.";
-        assert textarea_car_description != null : "fx:id=\"textarea_car_description\" was not injected: check your FXML file 'Scene.fxml'.";
-        
-        this.listview_cars = new ListView<>(cars);
-    }
     
     MongoClient mc;
     Database db;
-    private ObservableList<Car> cars = FXCollections
-      .observableArrayList();
+    private ObservableList<Car> cars;
+
+    @FXML // This method is called by the FXMLLoader when initialization is complete
+    void initialize() {
+        cars = FXCollections.observableArrayList();
+        this.listview_cars.setItems(cars);
+    }
 }

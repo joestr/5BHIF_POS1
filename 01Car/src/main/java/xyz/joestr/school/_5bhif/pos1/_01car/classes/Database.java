@@ -6,13 +6,11 @@
 package xyz.joestr.school._5bhif.pos1._01car.classes;
 
 import com.google.gson.Gson;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.util.JSON;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.bson.Document;
@@ -68,17 +66,38 @@ public class Database {
         return r;
     }
     
-    public boolean updateCar(Car oldCar, Car newCar) {
+    public long updateCar(Car car) {
         
         MongoCollection mc = mongoDatabase.getCollection("Cars");
 
-        return mc.updateOne(Document.parse(new Gson().toJson(oldCar)), Document.parse(new Gson().toJson(newCar))).wasAcknowledged();
+        Document doc = Document.parse(new Gson().toJson(car));
+        doc.remove("_id");
+        
+        return mc.updateOne(Filters.eq("_id", car.getId()), new Document("$set", doc)).getModifiedCount();
     }
     
-    public boolean replaceCar(Car oldCar, Car newCar) {
-        
+    public long updateCarAlt(Car car) {
         MongoCollection mc = mongoDatabase.getCollection("Cars");
 
-        return mc.replaceOne(Document.parse(new Gson().toJson(oldCar)), newCar).wasAcknowledged();
+        Document doc = Document.parse(new Gson().toJson(car));
+        doc.remove("_id");
+        
+        return mc.updateOne(Filters.eq("_id", car.getId()), doc).getModifiedCount();
+    }
+    
+    public long replaceCar(Car oldCar, Car newCar) {
+        
+        MongoCollection mc = mongoDatabase.getCollection("Cars");
+        
+        Document doc2 = Document.parse(new Gson().toJson(oldCar));
+        doc2.remove("_id");
+        
+        return mc.replaceOne(Filters.eq("_id", oldCar.getId()), doc2).getModifiedCount();
+    }
+    
+    public long deleteCar(Car car) {
+        MongoCollection mc = mongoDatabase.getCollection("Cars");
+        
+        return mc.deleteOne(Filters.eq("_id", car.getId())).getDeletedCount();
     }
 }
