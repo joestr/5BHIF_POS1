@@ -11,6 +11,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.bson.Document;
@@ -85,19 +88,63 @@ public class Database {
         return mc.updateOne(Filters.eq("_id", car.getId()), doc).getModifiedCount();
     }
     
-    public long replaceCar(Car oldCar, Car newCar) {
+    public long replaceCar(Car car) {
         
         MongoCollection mc = mongoDatabase.getCollection("Cars");
+
+        Document doc = Document.parse(new Gson().toJson(car));
+        doc.remove("_id");
         
-        Document doc2 = Document.parse(new Gson().toJson(oldCar));
-        doc2.remove("_id");
-        
-        return mc.replaceOne(Filters.eq("_id", oldCar.getId()), doc2).getModifiedCount();
+        return mc.replaceOne(Filters.eq("_id", car.getId()), new Document("$set", doc)).getModifiedCount();
     }
     
     public long deleteCar(Car car) {
         MongoCollection mc = mongoDatabase.getCollection("Cars");
         
         return mc.deleteOne(Filters.eq("_id", car.getId())).getDeletedCount();
+    }
+    
+    public void createTextIndex() throws Exception {
+        // splits text in tokens; updated automatically
+        MongoCollection mc = mongoDatabase.getCollection("Cars");
+        mc.createIndex(Indexes.text("description"));
+    }
+    
+    public Collection<Car> getAllCarsOrderByRelevance(String strFilter) throws Exception {
+        Collection<Car> result = new ArrayList<>();
+        Gson gson = new Gson();
+        
+        MongoCollection<Document> c = mongoDatabase.getCollection("Cars");
+        
+        ArrayList<Document> cD = c.find(
+            new Document(
+                "$text",
+                new Document(
+                    "$search",
+                    strFilter
+                ).append(
+                    "$caseSenesitive",
+                    false
+                ).append(
+                    "$diacriticSensitive",
+                    false
+                )
+            )
+        ).projection(
+            Projections.metaTextScore("score")
+        ).sort(
+            Sorts.metaTextScore("score")
+        ).into(
+            new ArrayList<>()
+        );
+        
+        for(Document d : cD) {
+            String jS = d.toJson();
+            Car car = gson.fromJson(jS, Car.class);
+            car.setId(d.get("_id", ObjectId.class));
+            result.add(car);
+        }
+        
+        return result;
     }
 }

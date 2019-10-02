@@ -42,5 +42,6 @@
       <TextArea fx:id="textarea_car_description" layoutX="39.0" layoutY="171.0" prefHeight="155.0" prefWidth="261.0" promptText="Car description" />
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
       <Text fx:id="text_label" layoutX="14.0" layoutY="434.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-background: yellow;" text="Text" wrappingWidth="929.13671875" />
+      <TextField fx:id="textfield_search" layoutX="22.0" layoutY="379.0" promptText="Search field" />
     </children>
 </AnchorPane>
