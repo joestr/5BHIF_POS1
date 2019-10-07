@@ -147,4 +147,8 @@ public class Database {
         
         return result;
     }
+    
+    public Collection<Owner> getAllOwners() {
+        return null;
+    }
 }

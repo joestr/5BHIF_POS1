@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -10,11 +12,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="453.0" prefWidth="796.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.joestr.school._5bhif.pos1._01car.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="375.0" prefWidth="1131.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.joestr.school._5bhif.pos1._01car.FXMLController">
     <children>
         <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
-      <MenuBar prefHeight="25.0" prefWidth="954.0">
+      <MenuBar prefHeight="25.0" prefWidth="1131.0">
         <menus>
+          <Menu mnemonicParsing="false" text="Database">
+            <items>
+              <MenuItem fx:id="menu_database_menuitem_connect" mnemonicParsing="false" onAction="#onActionMenuDatabaseMenuItemConnect" text="Connect" />
+                  <MenuItem fx:id="menu_database_menuitem_close" mnemonicParsing="false" onAction="#onActionMenuDatabaseMenuItemConnect" text="Close" />
+                  <MenuItem fx:id="menu_database_menuitem_createtextindex" mnemonicParsing="false" onAction="#onActionMenuDatabaseMenuItemCreateTextIndex" text="Create Text Index" />
+            </items>
+          </Menu>
           <Menu mnemonicParsing="false" text="Car">
             <items>
               <MenuItem id="menu-car_menuitem-insert" fx:id="menu_car_menuitem_insert" mnemonicParsing="false" onAction="#onActionMenuCarMenuItemInsert" text="Insert" />
@@ -25,23 +34,30 @@
                   <MenuItem id="menu-car_menuitem-findrelevance" fx:id="menu_car_menuitem_findrelevance" mnemonicParsing="false" onAction="#onActionMenuCarMenuItemFindRelevance" text="find relevance" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Database">
-            <items>
-              <MenuItem fx:id="menu_database_menuitem_connect" mnemonicParsing="false" onAction="#onActionMenuDatabaseMenuItemConnect" text="Connect" />
-                  <MenuItem fx:id="menu_database_menuitem_close" mnemonicParsing="false" onAction="#onActionMenuDatabaseMenuItemConnect" text="Close" />
-                  <MenuItem fx:id="menu_database_menuitem_createtextindex" mnemonicParsing="false" onAction="#onActionMenuDatabaseMenuItemCreateTextIndex" text="Create Text Index" />
-            </items>
-          </Menu>
+            <Menu mnemonicParsing="false" text="Owner">
+              <items>
+                <MenuItem fx:id="menu_owner_menuitem_add" mnemonicParsing="false" onAction="#onActionMenuOwner" text="Add" />
+                  <MenuItem fx:id="menu_owner_menuitem_update" mnemonicParsing="false" onAction="#onActionMenuOwner" text="Update" />
+                  <MenuItem fx:id="menu_owner_menuitem_delete" mnemonicParsing="false" onAction="#onActionMenuOwner" text="Delete" />
+                  <MenuItem fx:id="menu_owner_menuitem_replace" mnemonicParsing="false" onAction="#onActionMenuOwner" text="Replace" />
+                  <MenuItem fx:id="menu_owner_menuitem_findall" mnemonicParsing="false" onAction="#onActionMenuOwner" text="find all" />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
-      <TextField id="textfield_connection-ip" fx:id="textfield_database_ip" layoutX="39.0" layoutY="39.0" prefHeight="25.0" prefWidth="149.0" promptText="Database IP" text="127.0.0.1" />
-      <TextField id="textfield_car-name" fx:id="textfield_car_name" layoutX="39.0" layoutY="75.0" promptText="Car name" />
-      <TextField id="textfield_car-productionyear" fx:id="textfield_car_productionyear" layoutX="39.0" layoutY="108.0" promptText="Car productionyear" />
-      <TextField id="textfield_car-kw" fx:id="textfield_car_kw" layoutX="39.0" layoutY="137.0" promptText="Car horsepower" />
-      <ListView id="listview_car-list" fx:id="listview_cars" layoutX="323.0" layoutY="37.0" prefHeight="367.0" prefWidth="609.0" />
-      <TextArea fx:id="textarea_car_description" layoutX="39.0" layoutY="171.0" prefHeight="155.0" prefWidth="261.0" promptText="Car description" />
+      <TextField id="textfield_connection-ip" fx:id="textfield_database_ip" layoutX="10.0" layoutY="35.0" prefHeight="25.0" prefWidth="149.0" promptText="Database IP" text="127.0.0.1" />
+      <TextField id="textfield_car-name" fx:id="textfield_car_name" layoutX="10.0" layoutY="70.0" promptText="Car name" />
+      <TextField id="textfield_car-productionyear" fx:id="textfield_car_productionyear" layoutX="10.0" layoutY="105.0" promptText="Car productionyear" />
+      <TextField id="textfield_car-kw" fx:id="textfield_car_kw" layoutX="10.0" layoutY="140.0" promptText="Car horsepower" />
+      <ListView id="listview_car-list" fx:id="listview_cars" layoutX="169.0" layoutY="71.0" prefHeight="256.0" prefWidth="438.0" />
+      <TextArea fx:id="textarea_car_description" layoutX="10.0" layoutY="175.0" prefHeight="155.0" prefWidth="149.0" promptText="Car description" />
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-      <Text fx:id="text_label" layoutX="14.0" layoutY="434.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-background: yellow;" text="Text" wrappingWidth="929.13671875" />
-      <TextField fx:id="textfield_search" layoutX="22.0" layoutY="379.0" promptText="Search field" />
+      <Text fx:id="text_label" layoutX="10.0" layoutY="362.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-background: yellow;" text="Text" wrappingWidth="1109.13671875" />
+      <TextField fx:id="textfield_search" layoutX="169.0" layoutY="35.0" prefHeight="25.0" prefWidth="438.0" promptText="Search field" />
+      <Accordion layoutX="953.0" layoutY="104.0" />
+      <TextField fx:id="owner_name" layoutX="617.0" layoutY="35.0" promptText="Owner name" />
+      <TextArea fx:id="owner_details" layoutX="617.0" layoutY="70.0" prefHeight="108.0" prefWidth="149.0" promptText="Owner details" />
+      <DatePicker fx:id="owner_birth" layoutX="617.0" layoutY="187.0" prefHeight="25.0" prefWidth="149.0" />
+      <ListView fx:id="listview_owners" layoutX="776.0" layoutY="35.0" prefHeight="297.0" prefWidth="319.0" />
     </children>
 </AnchorPane>

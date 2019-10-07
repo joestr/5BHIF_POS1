@@ -18,6 +18,7 @@ public class Car {
     private String name;
     private int hp, year;
     private String description;
+    private Owner owner;
 
     public Car(String name, int hp, int year, String description) {
         this.name = name;
@@ -77,4 +78,11 @@ public class Car {
         this.description = description;
     }
     
+    public Owner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
 }

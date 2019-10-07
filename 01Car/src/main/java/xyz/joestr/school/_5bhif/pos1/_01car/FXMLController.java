@@ -8,10 +8,12 @@ import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -21,65 +23,91 @@ import javafx.scene.text.Text;
 import org.bson.types.ObjectId;
 import xyz.joestr.school._5bhif.pos1._01car.classes.Car;
 import xyz.joestr.school._5bhif.pos1._01car.classes.Database;
+import xyz.joestr.school._5bhif.pos1._01car.classes.Owner;
 
 public class FXMLController {
     
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
 
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
+    @FXML
+    private Label label;
 
-    @FXML // fx:id="label"
-    private Label label; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_database_menuitem_connect;
 
-    @FXML // fx:id="menu_car_menuitem_insert"
-    private MenuItem menu_car_menuitem_insert; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_database_menuitem_close;
 
-    @FXML // fx:id="menu_car_menuitem_delete"
-    private MenuItem menu_car_menuitem_delete; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_database_menuitem_createtextindex;
 
-    @FXML // fx:id="menu_car_menuitem_update"
-    private MenuItem menu_car_menuitem_update; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_car_menuitem_insert;
 
-    @FXML // fx:id="menu_car_menuitem_replace"
-    private MenuItem menu_car_menuitem_replace; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_car_menuitem_delete;
 
-    @FXML // fx:id="menu_car_menuitem_findall"
-    private MenuItem menu_car_menuitem_findall; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_car_menuitem_update;
 
-    @FXML // fx:id="menu_car_menuitem_findrelevance"
-    private MenuItem menu_car_menuitem_findrelevance; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_car_menuitem_replace;
 
-    @FXML // fx:id="menu_database_menuitem_connect"
-    private MenuItem menu_database_menuitem_connect; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_car_menuitem_findall;
 
-    @FXML // fx:id="menu_database_menuitem_close"
-    private MenuItem menu_database_menuitem_close; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_car_menuitem_findrelevance;
 
-    @FXML // fx:id="menu_database_menuitem_createtextindex"
-    private MenuItem menu_database_menuitem_createtextindex; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_owner_menuitem_add;
 
-    @FXML // fx:id="textfield_database_ip"
-    private TextField textfield_database_ip; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_owner_menuitem_update;
 
-    @FXML // fx:id="textfield_car_name"
-    private TextField textfield_car_name; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_owner_menuitem_delete;
 
-    @FXML // fx:id="textfield_car_productionyear"
-    private TextField textfield_car_productionyear; // Value injected by FXMLLoader
+    @FXML
+    private MenuItem menu_owner_menuitem_replace;
 
-    @FXML // fx:id="textfield_car_kw"
-    private TextField textfield_car_kw; // Value injected by FXMLLoader
-    
-    @FXML // fx:id="textarea_car_description"
-    private TextArea textarea_car_description; // Value injected by FXMLLoader
-    
-    @FXML // fx:id="listview_cars"
-    private ListView<Car> listview_cars; // Value injected by FXMLLoader
-    
+    @FXML
+    private MenuItem menu_owner_menuitem_findall;
+
+    @FXML
+    private TextField textfield_database_ip;
+
+    @FXML
+    private TextField textfield_car_name;
+
+    @FXML
+    private TextField textfield_car_productionyear;
+
+    @FXML
+    private TextField textfield_car_kw;
+
+    @FXML
+    private ListView<Car> listview_cars;
+
+    @FXML
+    private TextArea textarea_car_description;
+
     @FXML
     private Text text_label;
+
+    @FXML
+    private TextField textfield_search;
+
+    @FXML
+    private TextField owner_name;
+
+    @FXML
+    private TextArea owner_details;
+
+    @FXML
+    private DatePicker owner_birth;
+
+    @FXML
+    private ListView<Owner> listview_owners;
 
     @FXML
     void onActionMenuCarMenuItemDelete(ActionEvent event) {
@@ -130,13 +158,91 @@ public class FXMLController {
 
     }
     
+    @FXML
+    void onActionMenuOwner(ActionEvent event) {
+
+        // Initial insert to the car
+        if(event.getSource().equals(this.menu_owner_menuitem_add)) {
+            Owner o = new Owner(
+                this.owner_name.getText(),
+                this.owner_details.getText(),
+                this.owner_birth.getValue()
+            );
+            
+            o.setId(new ObjectId());
+            
+            this.selectedCar.setOwner(o);
+            
+            db.replaceCar(selectedCar);
+        }
+        
+        if(event.getSource().equals(this.menu_owner_menuitem_delete)) {
+            
+            this.selectedCar.setOwner(null);
+            
+            db.updateCar(this.selectedCar);
+        }
+        
+        if(event.getSource().equals(this.menu_owner_menuitem_update)) {
+            
+            Owner o = this.selectedCar.getOwner();
+            
+            o.setName(this.owner_name.getText());
+            o.setDetails(this.owner_details.getText());
+            o.setBirth(this.owner_birth.getValue());
+            
+            this.selectedCar.setOwner(o);
+            
+            db.updateCar(this.selectedCar);
+        }
+        
+        if(event.getSource().equals(this.menu_owner_menuitem_replace)) {
+            
+        }
+        
+        if(event.getSource().equals(this.menu_owner_menuitem_findall)) {
+            
+            db.getAllOwners();
+        }
+    }
+    
     MongoClient mc;
     Database db;
     private ObservableList<Car> cars;
+    private ObservableList<Owner> owners;
+    Car selectedCar;
+    Owner selectedOwner;
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         cars = FXCollections.observableArrayList();
         this.listview_cars.setItems(cars);
+        this.listview_owners.setItems(owners);
+        
+        this.listview_cars.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Car> observable, Car oldValue, Car newValue) -> {
+            if (newValue != null) {
+                selectedCar = newValue;
+                textfield_car_name.setText(selectedCar.getName());
+                textfield_car_productionyear.setText("" + selectedCar.getYear());
+                textfield_car_kw.setText("" + selectedCar.getHp());
+                
+                if (this.selectedCar.getOwner() != null) {
+                    owners.setAll(this.selectedCar.getOwner());
+                }
+            }
+        });
+        
+        this.listview_owners.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Owner> observable, Owner oldValue, Owner newValue) -> {
+            if (newValue != null) {
+                selectedOwner = newValue;
+                owner_details.setText(selectedOwner.getDetails());
+                owner_name.setText(selectedOwner.getName());
+                owner_birth.setValue(selectedOwner.getBirth());
+            }
+        });
     }
+    
+    public void weDoVOidHereSinceJavaDoesNotProvideAnyVoidCall() {
+        
+    };
 }
