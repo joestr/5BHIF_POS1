@@ -17,6 +17,11 @@ public class Owner {
     private String name, details;
     private LocalDate birth;
 
+    @Override
+    public String toString() {
+        return name + ", " + details + ", " + birth;
+    }
+
     public Owner() {
     }
 

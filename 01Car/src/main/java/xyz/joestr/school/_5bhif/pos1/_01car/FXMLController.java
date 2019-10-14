@@ -8,6 +8,9 @@ import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -115,36 +118,54 @@ public class FXMLController {
     }
 
     @FXML
-    void onActionMenuCarMenuItemFindAll(ActionEvent event) {
+    void onActionMenuCarMenuItemFindAll(ActionEvent event) throws Exception {
         cars.setAll(db.getAllCars());
-        this.text_label.setText("Loaded all elements from database!");
+        this.text_label.setText("Loaded all elements from database");
     }
 
     @FXML
     void onActionMenuCarMenuItemFindRelevance(ActionEvent event) {
-
+        try {
+            cars.setAll(db.getAllCarsOrderedByRelevance(this.textfield_search.getText()));
+        } catch (Exception ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.text_label.setText("Loaded all elemnts by relevance: '" + this.textfield_search.getText() + "'");
     }
 
     @FXML
-    void onActionMenuCarMenuItemInsert(ActionEvent event) {
+    void onActionMenuCarMenuItemInsert(ActionEvent event) throws Exception {
         Car c = new Car(
             textfield_car_name.getText(),
-            Integer.parseInt(textfield_car_productionyear.getText()),
             Integer.parseInt(textfield_car_kw.getText()),
+            Integer.parseInt(textfield_car_productionyear.getText()),
             textarea_car_description.getText()
         );
-        db.insertCart(c);
-        this.text_label.setText("Inserted " + c.toLongString());
+        db.insertCar(c);
+        this.text_label.setText("Inserted car: '" + c.toLongString() + "'");
     }
 
     @FXML
-    void onActionMenuCarMenuItemReplace(ActionEvent event) {
-
+    void onActionMenuCarMenuItemReplace(ActionEvent event) throws Exception {
+        Car c = new Car(
+            textfield_car_name.getText(),
+            Integer.parseInt(textfield_car_kw.getText()),
+            Integer.parseInt(textfield_car_productionyear.getText()),
+            textarea_car_description.getText()
+        );
+        db.replaceCar(c);
     }
 
     @FXML
-    void onActionMenuCarMenuItemUpdate(ActionEvent event) {
-        //db.updateCar(oldCar, newCar);
+    void onActionMenuCarMenuItemUpdate(ActionEvent event) throws Exception {
+        Car c = new Car(
+            textfield_car_name.getText(),
+            Integer.parseInt(textfield_car_kw.getText()),
+            Integer.parseInt(textfield_car_productionyear.getText()),
+            textarea_car_description.getText()
+        );
+        c.setId(selectedCar.getId());
+        db.updateCar(c);
     }
 
     @FXML
@@ -159,7 +180,7 @@ public class FXMLController {
     }
     
     @FXML
-    void onActionMenuOwner(ActionEvent event) {
+    void onActionMenuOwner(ActionEvent event) throws Exception {
 
         // Initial insert to the car
         if(event.getSource().equals(this.menu_owner_menuitem_add)) {
@@ -169,18 +190,18 @@ public class FXMLController {
                 this.owner_birth.getValue()
             );
             
-            o.setId(new ObjectId());
-            
-            this.selectedCar.setOwner(o);
-            
-            db.replaceCar(selectedCar);
+            db.insertOwner(selectedCar, o);
         }
         
         if(event.getSource().equals(this.menu_owner_menuitem_delete)) {
             
             this.selectedCar.setOwner(null);
             
-            db.updateCar(this.selectedCar);
+            try {
+                db.updateCar(this.selectedCar);
+            } catch (Exception ex) {
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
         if(event.getSource().equals(this.menu_owner_menuitem_update)) {
@@ -197,12 +218,20 @@ public class FXMLController {
         }
         
         if(event.getSource().equals(this.menu_owner_menuitem_replace)) {
+            Owner o = this.selectedCar.getOwner();
             
+            o.setName(this.owner_name.getText());
+            o.setDetails(this.owner_details.getText());
+            o.setBirth(this.owner_birth.getValue());
+            
+            o.setId(selectedOwner.getId());
+            
+            db.replaceOwner(o);
         }
         
         if(event.getSource().equals(this.menu_owner_menuitem_findall)) {
             
-            db.getAllOwners();
+            this.owners.setAll(db.getAllOwners());
         }
     }
     
@@ -216,6 +245,7 @@ public class FXMLController {
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         cars = FXCollections.observableArrayList();
+        owners = FXCollections.observableArrayList();
         this.listview_cars.setItems(cars);
         this.listview_owners.setItems(owners);
         
@@ -227,7 +257,7 @@ public class FXMLController {
                 textfield_car_kw.setText("" + selectedCar.getHp());
                 
                 if (this.selectedCar.getOwner() != null) {
-                    owners.setAll(this.selectedCar.getOwner());
+                    this.owners.setAll(db.getOwnerOfCar(selectedCar));
                 }
             }
         });
@@ -239,6 +269,8 @@ public class FXMLController {
                 owner_name.setText(selectedOwner.getName());
                 owner_birth.setValue(selectedOwner.getBirth());
             }
+            
+            this.cars.setAll(db.getCarsOfOwner(selectedOwner));
         });
     }
     
