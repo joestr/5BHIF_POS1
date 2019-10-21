@@ -5,6 +5,7 @@
  */
 package xyz.joestr.school._5bhif.pos1._01car.classes;
 
+import java.util.Collection;
 import org.bson.types.ObjectId;
 
 
@@ -18,7 +19,7 @@ public class Car {
     private String name;
     private int hp, year;
     private String description;
-    private Owner owner;
+    private transient Collection<Ownership> ownerships;
 
     public Car(String name, int hp, int year, String description) {
         this.name = name;
@@ -78,11 +79,11 @@ public class Car {
         this.description = description;
     }
     
-    public Owner getOwner() {
-        return owner;
+    public Collection<Ownership> getOwnerships() {
+        return this.ownerships;
     }
 
-    public void setOwner(Owner owner) {
-        this.owner = owner;
+    public void setOwner(Collection<Ownership> ownerships) {
+        this.ownerships = ownerships;
     }
 }
