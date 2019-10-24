@@ -7,6 +7,8 @@ package xyz.joestr.school._5bhif.pos1._01car.classes;
 
 import org.bson.types.ObjectId;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  *
@@ -16,11 +18,6 @@ public class Owner {
     private ObjectId _id;
     private String name, details;
     private LocalDate birth;
-
-    @Override
-    public String toString() {
-        return name + ", " + details + ", " + birth;
-    }
 
     public Owner() {
     }
@@ -62,6 +59,13 @@ public class Owner {
     public void setBirth(LocalDate birth) {
         this.birth = birth;
     }
+
+    void setBirth(Date birthDate) {
+        this.birth = birthDate.toInstant().atZone(ZoneId.of("UTC")).toLocalDate();
+    }
     
-    
+    @Override
+    public String toString() {
+        return name + ", " + details + ", " + birth;
+    }
 }

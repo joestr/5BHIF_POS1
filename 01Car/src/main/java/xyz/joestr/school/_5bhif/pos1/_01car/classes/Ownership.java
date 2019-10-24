@@ -9,13 +9,13 @@ import java.time.LocalDate;
 import org.bson.types.ObjectId;
 
 /**
- *
  * @author Joel
  */
-class Ownership {
+public class Ownership {
     
+    private ObjectId _id;
     private transient LocalDate startDate, endDate;
-    private ObjectId id;
+    private ObjectId ownerId;
 
     public Ownership() {
     }
@@ -23,9 +23,17 @@ class Ownership {
     public Ownership(LocalDate startDate, LocalDate endDate, ObjectId ownerId) {
         this.startDate = startDate;
         this.endDate = endDate;
-        this.id = ownerId;
+        this.ownerId = ownerId;
     }
 
+    public ObjectId getId() {
+        return _id;
+    }
+
+    public void setId(ObjectId ownerId) {
+        this._id = ownerId;
+    }
+    
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -42,13 +50,16 @@ class Ownership {
         this.endDate = endDate;
     }
 
-    public ObjectId getId() {
-        return id;
+    public ObjectId getOwnerId() {
+        return ownerId;
     }
 
-    public void setId(ObjectId ownerId) {
-        this.id = ownerId;
+    public void setOwnerId(ObjectId ownerId) {
+        this.ownerId = ownerId;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return startDate + ", " + endDate + ", " + ownerId;
+    }
 }

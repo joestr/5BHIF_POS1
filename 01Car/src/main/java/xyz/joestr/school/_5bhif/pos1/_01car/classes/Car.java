@@ -5,6 +5,7 @@
  */
 package xyz.joestr.school._5bhif.pos1._01car.classes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import org.bson.types.ObjectId;
 
@@ -19,7 +20,7 @@ public class Car {
     private String name;
     private int hp, year;
     private String description;
-    private transient Collection<Ownership> ownerships;
+    private transient Collection<Ownership> ownerships = new ArrayList<>();
 
     public Car(String name, int hp, int year, String description) {
         this.name = name;

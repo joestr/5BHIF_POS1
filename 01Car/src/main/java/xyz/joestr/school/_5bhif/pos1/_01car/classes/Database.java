@@ -6,17 +6,27 @@
 package xyz.joestr.school._5bhif.pos1._01car.classes;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.exists;
+import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import org.bson.BsonDateTime;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -26,58 +36,80 @@ import org.bson.types.ObjectId;
  */
 public class Database {
 
-    private static MongoClient mongoClient;
-    private static MongoDatabase mongoDatabase;
-    private static String CONNECTIONSTRING;
     private static final String DATABASENAME = "mydb";
     private static final String CARCOLLECTION = "Cars";
     private static final String OWNERCOLLECTION = "Owners";
 
     private static Database database = null;
+    
+    private static MongoClient mongoClient;
+    private static MongoDatabase mongoDatabase;
+
     private static MongoCollection<Document> carsCollection;
     private static MongoCollection<Document> ownersCollection;
 
     public static Database getInstance(String ip) throws Exception {
         if (database == null) {
             database = new Database();
-            CONNECTIONSTRING = ip;
-            mongoClient = new MongoClient(CONNECTIONSTRING, 27017);
+            
+            mongoClient = new MongoClient(ip, 27017);
+            
             mongoDatabase = mongoClient.getDatabase(DATABASENAME);
+            
             carsCollection = mongoDatabase.getCollection(CARCOLLECTION);
             ownersCollection = mongoDatabase.getCollection(OWNERCOLLECTION);
         }
+        
         return database;
     }
 
     private Database() throws Exception {
-
     }
 
+    /**
+     * Closes the connection and sets database instance to {@code null}.
+     * @throws Exception 
+     */
     public void close() throws Exception {
         mongoClient.close();
         database = null;
     }
 
+    /**
+     * Creates necessary indizes for wider functionality.
+     * @deprecated The name is misleading since this method creates multiple
+     * indizes and not only text inidizes.
+     * @throws Exception 
+     */
     public void createTextIndex() throws Exception {
         //splits text in tokens; updated automatically
-        carsCollection.createIndex(Indexes.text("description"));
+        //carsCollection.createIndex(Indexes.text("description"));
+        //ownersCollection.createIndex(Indexes.text("details"));
+        
+        Document index = new Document("ownerships.startDateISO", 1);
+        index.append("_id", 1);
+        carsCollection.createIndex(index, new IndexOptions().unique(true));
     }
 
     /**
-     * Gets all cars.
+     * Gets all cars sorted by the year descending and name acending.
      * @return A collection of cars
      * @throws Exception If an error occours
      */
     public Collection<Car> getAllCars() throws Exception {
-        Collection<Car> collCars = new ArrayList<>();
-        Document sortOrder = new Document("year", -1); //desc
-        sortOrder.append("name", 1); //asc
+        Collection<Car> cars = new ArrayList<>();
+        
+        // The sorting order
+        Document sortOrder = new Document("year", -1); // by year descending
+        sortOrder.append("name", 1);                   // and name ascending
+        
         for (Document doc : carsCollection.find().sort(sortOrder)) {
             Car car = new Gson().fromJson(doc.toJson(), Car.class);
-            car.setId((ObjectId) doc.get("_id"));
-            collCars.add(car);
+            car.setId(doc.get("_id", ObjectId.class));
+            cars.add(car);
         }
-        return collCars;
+        
+        return cars;
     }
 
     /**
@@ -86,22 +118,28 @@ public class Database {
      * @return A list with cars
      * @throws Exception If an error occours
      */
-    public ArrayList<Car> getAllCarsOrderedByRelevance(String strFilter) throws Exception {
-        ArrayList<Car> collCars = new ArrayList<>();
-        ArrayList<Document> collDocuments
-                = carsCollection.find(new Document("$text",
-                        new Document("$search", strFilter)
-                                .append("$caseSensitive", false)
-                                .append("$diacriticSensitive", false)))
-                        .projection(Projections.metaTextScore("score"))
-                        .sort(Sorts.metaTextScore("score"))
-                        .into(new ArrayList<>());
-        for (Document doc : collDocuments) {
+    public Collection<Car> getAllCarsOrderedByRelevance(String strFilter) throws Exception {
+        Collection<Car> cars = new ArrayList<>();
+        
+        Collection<Document> docs
+            = carsCollection.find(
+                new Document("$text",
+                    new Document("$search", strFilter)
+                        .append("$caseSensitive", false)
+                        .append("$diacriticSensitive", false)
+                )
+            )
+            .projection(Projections.metaTextScore("score"))
+            .sort(Sorts.metaTextScore("score"))
+            .into(new ArrayList<>());
+        
+        for (Document doc : docs) {
             Car car = new Gson().fromJson(doc.toJson(), Car.class);
-            car.setId((ObjectId) doc.get("_id"));
-            collCars.add(car);
+            car.setId(doc.get("_id", ObjectId.class));
+            cars.add(car);
         }
-        return collCars;
+        
+        return cars;
     }
 
     /**
@@ -113,7 +151,7 @@ public class Database {
     public ObjectId insertCar(Car car) throws Exception {
         Document doc = Document.parse(new Gson().toJson(car));
         carsCollection.insertOne(doc);
-        car.setId((ObjectId) doc.get("_id"));
+        car.setId(doc.get("_id", ObjectId.class));
         return doc.get("_id", ObjectId.class);
     }
     
@@ -126,7 +164,10 @@ public class Database {
     public long updateCar(Car newCar) throws Exception {
         Document doc = Document.parse(new Gson().toJson(newCar));
         doc.remove("_id");
-        UpdateResult ur = carsCollection.updateOne(eq("_id", newCar.getId()), new Document("$set", doc));
+        UpdateResult ur = carsCollection.updateOne(
+            Filters.eq("_id", newCar.getId()),
+            new Document("$set", doc)
+        );
         return ur.getModifiedCount();
     }
 
@@ -202,6 +243,12 @@ public class Database {
      */
     public ObjectId insertOwner(Owner owner) throws Exception {
         Document doc = Document.parse(new Gson().toJson(owner));
+        doc.append(
+            "birthISO",
+            new BsonDateTime(
+                owner.getBirth().atStartOfDay().toInstant(ZoneOffset.UTC).getEpochSecond() * 1000
+            )
+        );
         ownersCollection.insertOne(doc);
         owner.setId((ObjectId) doc.get("_id"));
         return doc.get("_id", ObjectId.class);
@@ -214,10 +261,11 @@ public class Database {
      * @throws Exception If an error occours
      */
     public long updateOwner(Owner owner) throws Exception {
-        //update owner's data in each possessed owner
-        return ownersCollection.updateOne(
-            eq("_id", Document.parse(new Gson().toJson(owner.getId()))),
-            new Document("$set", Document.parse(new Gson().toJson(owner)))).getModifiedCount();
+        Document doc = Document.parse(new Gson().toJson(owner));
+        doc.remove("_id");
+        doc.append("birthISO",
+                new BsonDateTime(owner.getBirth().atStartOfDay().toInstant(ZoneOffset.UTC).getEpochSecond() * 1000));
+        return ownersCollection.updateOne(eq("_id", owner.getId()), new Document("$set", doc)).getModifiedCount();
     }
     
     /**
@@ -226,7 +274,7 @@ public class Database {
      * @return The modified count
      * @throws Exception If an error occours
      */
-    public long replaceCar(Owner owner) throws Exception {
+    public long replaceOwner(Owner owner) throws Exception {
         Document doc = Document.parse(new Gson().toJson(owner));
         doc.remove("_id");
         UpdateResult ur = ownersCollection.replaceOne(eq("_id", owner.getId()), doc);
@@ -244,51 +292,122 @@ public class Database {
     }
     
     /**
-     * Get all ownerships of cars.
-     * @return List of ownerships
-     * @throws Exception If an error occours
+     * Add the supplied ownership to the supplied car.
+     * @param car The car to apply the ownership to
+     * @param ownership The ownership applied to the car
+     * @return The modifief car
+     * @throws Exception 
      */
-    public Collection<Ownership> getAllOwnerships() throws Exception {
-        ArrayList<Ownership> collOwnerships = new ArrayList<>();
-        carsCollection.distinct("owner", Document.class)
-                .into(new ArrayList<>())
-                .forEach(doc -> collOwnerships.add(new Gson().fromJson(((Document) doc).toJson(), Ownership.class)));
-        //mongo doesn't support both distinct and sort in one statement
-        collOwnerships.sort((o1, o2) -> o1.getId().compareTo(o2.getId()));
-        return collOwnerships;
+    public long addOwnershipToCar(Car car, Ownership ownership) throws Exception {
+        //car and date must be unique
+        /*long matches = carsCollection.countDocuments(Filters.and(
+//                Filters.eq("_id", car.getId()),
+//                Filters.eq("collOwnership._ownerId", ownership.getIdOwner()),
+//                Filters.eq("ownerships.startDateISO", new BsonDateTime(ownership.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC).getEpochSecond() * 1000))
+        ));
+        if (matches > 0) {
+            throw new Exception("unique constraint violated: owner id and start date must be unique");
+        }*/
+
+        Document doc = new Document(); //only consists of special fields like ObjectId, ISODate
+        doc.append("ownerId", ownership.getOwnerId());
+        doc.append("startDateISO",
+                new BsonDateTime(ownership.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC).getEpochSecond() * 1000));
+        if (ownership.getEndDate() != null) {
+            doc.append("endDateISO",
+                    new BsonDateTime(ownership.getEndDate().atStartOfDay().toInstant(ZoneOffset.UTC).getEpochSecond() * 1000));
+        }
+        return carsCollection.updateOne(eq("_id", car.getId()), Updates.addToSet("ownerships", doc)).getModifiedCount();
     }
 
+    /**
+     * The all ownerhips of the supplied car
+     * @param car The car to get the ownerships from
+     * @return List of ownerships
+     */
+    public ArrayList<Ownership> getOwnershipsOfCar(Car car) {
+        ArrayList<Ownership> ownerships = new ArrayList<>();
+        Document first = carsCollection.find(eq("_id", car.getId())).projection(Projections.include("ownerships")).first();
+        ArrayList<Document> listOfDocs = (ArrayList<Document>) first.get("ownerships");
+        if(listOfDocs == null) return ownerships;
+        for (Document doc : listOfDocs) {
+            Ownership ownership = new Ownership();
+            ownership.setOwnerId(doc.get("ownerId", ObjectId.class));
+            ownership.setStartDate(doc.get("startDateISO", Date.class).toInstant().atZone(ZoneId.of("UTC")).toLocalDate());
+            if (doc.get("endDateISO") != null) {
+                ownership.setEndDate(doc.get("endDateISO", Date.class).toInstant().atZone(ZoneId.of("UTC")).toLocalDate());
+            }
+            ownerships.add(ownership);
+        }
+        return ownerships;
+    }
+
+    /**
+     * Removes the supplied ownership from the supplied car.
+     * @param car The car from which the supplied ownership will be removed
+     * @param ownership The supplied ownerhsip
+     * @return The modified count
+     */
+    public long removeOwnershipFromCar(Car car, Ownership ownership) {
+        return carsCollection.updateOne(
+            Filters.eq(
+                "_id",
+                car.getId()
+            ),
+            Updates.pull(
+                "ownerships",
+                Filters.and(
+                    Filters.eq(
+                        "ownerId",
+                        ownership.getOwnerId()
+                    ),
+                    Filters.eq(
+                        "startDateISO",
+                        new BsonDateTime(ownership.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC).getEpochSecond() * 1000)
+                    )
+                )
+            )
+        ).getModifiedCount();
+    }
+    
+    /**
+     * Gets all cars of the selected owner.
+     * @param owner The owner fro which we want all cars
+     * @return List of cars
+     */
     public ArrayList<Car> getCarsOfOwner(Owner owner) {
         ArrayList<Car> collCars = new ArrayList<>();
-        ArrayList<Document> carDocs = (ArrayList<Document>) carsCollection
-                .find(exists("owner", true))
-                .filter(eq("owner._id", Document.parse(new Gson().toJson(owner.getId()))))
-                .into(new ArrayList<>());
-        for (Document doc : carDocs) {
-            String jsonString = doc.toJson();
-            Car car = new Gson().fromJson(jsonString, Car.class);
-            car.setId((ObjectId) doc.get("_id"));
-            this.setOwnerIdOfCar(car, doc);
-            collCars.add(car);
-        }
+        //https://docs.mongodb.com/manual/reference/operator/query/elemMatch/
+        carsCollection.find(
+            Filters.elemMatch(
+                "ownerships",
+                Filters.eq(
+                    "ownerId", owner.getId()
+                )
+            )
+        )
+        .into(new ArrayList<>())
+        .forEach(doc -> collCars.add(convertDocToCarWizard(doc)));
         return collCars;
     }
+    
 
-    public void assignOwnerToCar(Car car, Owner owner) throws Exception {
-        car.setOwner(owner);
-        this.replaceCar(car);
+    private Owner convertDocToOwner(Document doc) throws JsonSyntaxException {
+        Date birthDate = doc.get("birthISO", Date.class);
+        Owner owner = new Gson().fromJson(((Document) doc).toJson(), Owner.class);
+        owner.setBirth(birthDate);
+        owner.setId((ObjectId) doc.get("_id")); //gemein
+        return owner;
     }
 
-    public long deleteOwnerFromCar(Car carWithOwner) {
-        String jsonString = new Gson().toJson(carWithOwner);
-        Document doc = Document.parse(jsonString);
-        doc.remove("_id");
-        UpdateResult ur = carsCollection.updateOne(eq("_id", carWithOwner.getId()), new Document("$unset", new Document("owner", "")));
-        return ur.getModifiedCount();
+    private Car convertDocToCarWizard(Document doc) throws JsonSyntaxException {
+        String jsonString = doc.toJson();
+        Car car = new Gson().fromJson(jsonString, Car.class);
+        car.setId((ObjectId) doc.get("_id"));
+        return car;
     }
-
-    private void setOwnerIdOfCar(Car car, Document doc) {
-       Document ownerDoc = doc.get("owner", Document.class);
-       ownerDoc.put("_id", car.getId());
-   }
+    
+    public Owner getOwnerById(ObjectId idOwner) {
+        return convertDocToOwner(ownersCollection.find(eq("_id", idOwner)).first());
+    }
 }
