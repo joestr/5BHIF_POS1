@@ -82,13 +82,8 @@ public class Database {
      * @throws Exception 
      */
     public void createTextIndex() throws Exception {
-        //splits text in tokens; updated automatically
-        //carsCollection.createIndex(Indexes.text("description"));
-        //ownersCollection.createIndex(Indexes.text("details"));
-        
-        Document index = new Document("ownerships.startDateISO", 1);
-        index.append("_id", 1);
-        carsCollection.createIndex(index, new IndexOptions().unique(true));
+        carsCollection.createIndex(Indexes.text("description"));
+        ownersCollection.createIndex(Indexes.text("details"));
     }
 
     /**
@@ -283,7 +278,7 @@ public class Database {
     
     /**
      * Deletes a owner.
-     * @param car The owner to delete
+     * @param owner The owner to delete
      * @return The modified count
      * @throws Exception If an error occours
      */
@@ -299,15 +294,15 @@ public class Database {
      * @throws Exception 
      */
     public long addOwnershipToCar(Car car, Ownership ownership) throws Exception {
-        //car and date must be unique
-        /*long matches = carsCollection.countDocuments(Filters.and(
-//                Filters.eq("_id", car.getId()),
-//                Filters.eq("collOwnership._ownerId", ownership.getIdOwner()),
-//                Filters.eq("ownerships.startDateISO", new BsonDateTime(ownership.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC).getEpochSecond() * 1000))
+        
+        long matches = carsCollection.countDocuments(Filters.and(
+            Filters.eq("_id", car.getId()),
+            Filters.eq("ownerships.startDateISO", new BsonDateTime(ownership.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC).getEpochSecond() * 1000))
         ));
+        
         if (matches > 0) {
-            throw new Exception("unique constraint violated: owner id and start date must be unique");
-        }*/
+            throw new IllegalStateException("Unique contraints violated: _id and ownerships.startDateISO must be unique in collection cars");
+        }
 
         Document doc = new Document(); //only consists of special fields like ObjectId, ISODate
         doc.append("ownerId", ownership.getOwnerId());

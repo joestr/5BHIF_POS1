@@ -5,9 +5,11 @@
  */
 package xyz.joestr.school._5bhif.pos1._01car.classes;
 
+import java.text.SimpleDateFormat;
 import org.bson.types.ObjectId;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
@@ -66,6 +68,7 @@ public class Owner {
     
     @Override
     public String toString() {
-        return name + ", " + details + ", " + birth;
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return name + ", " + details + ", " + birth.format(format);
     }
 }

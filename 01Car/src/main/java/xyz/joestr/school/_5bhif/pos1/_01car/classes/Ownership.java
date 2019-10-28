@@ -5,7 +5,9 @@
  */
 package xyz.joestr.school._5bhif.pos1._01car.classes;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.bson.types.ObjectId;
 
 /**
@@ -60,6 +62,7 @@ public class Ownership {
 
     @Override
     public String toString() {
-        return startDate + ", " + endDate + ", " + ownerId;
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return startDate.format(format) + ", " + (endDate != null ? endDate.format(format) : "--.--.----") + ", " + ownerId;
     }
 }

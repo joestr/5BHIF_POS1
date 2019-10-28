@@ -165,7 +165,7 @@ public class FXMLController {
                 this.cars.setAll(this.db.getAllCarsOrderedByRelevance(this.textfield_car_search.getText()));
                 LOGGER.log(
                     Level.INFO,
-                    "Loaded all cars by relevance: '{0}'",
+                    "Loaded all cars by relevance: {0}",
                     this.textfield_car_search.getText()
                 );
             } catch (Exception ex) {
@@ -175,10 +175,10 @@ public class FXMLController {
         
         if(event.getSource().equals(button_owner_search_submit)) {
             try {
-                this.owners.setAll(this.db.getAllOwnersOrderedByRelevance(this.textfield_car_search.getText()));
+                this.owners.setAll(this.db.getAllOwnersOrderedByRelevance(this.owner_search_field.getText()));
                 LOGGER.log(
                     Level.INFO,
-                    "Loaded all owners by relevance: '{0}'",
+                    "Loaded all owners by relevance: {0}",
                     this.textfield_car_search.getText()
                 );
             } catch (Exception ex) {
@@ -198,7 +198,7 @@ public class FXMLController {
             );
             try {
                 db.insertCar(c);
-                LOGGER.log(Level.INFO, "Inserted car: '{0}'", c.toString());
+                LOGGER.log(Level.INFO, "Inserted car: {0}", c.toString());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -214,7 +214,7 @@ public class FXMLController {
             c.setId(this.selectedCar.getId());
             try {
                 db.updateCar(c);
-                LOGGER.log(Level.INFO, "Updated car: '{0}'", c);
+                LOGGER.log(Level.INFO, "Updated car: {0}", c);
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -229,7 +229,7 @@ public class FXMLController {
             );
             try {
                 db.replaceCar(c);
-                LOGGER.log(Level.INFO, "Replaced car: '{0}'", c.toString());
+                LOGGER.log(Level.INFO, "Replaced car: {0}", c.toString());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -238,7 +238,7 @@ public class FXMLController {
         if(event.getSource().equals(this.menuitem_car_delete)) {
             try {
                 db.deleteCar(this.selectedCar);
-                LOGGER.log(Level.INFO, "Deleted car: '{0}'", this.selectedCar.toString());
+                LOGGER.log(Level.INFO, "Deleted car: {0}", this.selectedCar.toString());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -256,7 +256,7 @@ public class FXMLController {
         if(event.getSource().equals(this.menuitem_car_findrelevance)) {
             try {
                 this.cars.setAll(db.getAllCarsOrderedByRelevance(this.textfield_car_search.getText()));
-                LOGGER.log(Level.INFO, "Loaded all cars by relevance: '{0}'", this.textfield_car_search.getText());
+                LOGGER.log(Level.INFO, "Loaded all cars by relevance: {0}", this.textfield_car_search.getText());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -298,7 +298,7 @@ public class FXMLController {
             );
             try {
                 db.insertOwner(o);
-                LOGGER.log(Level.INFO, "Inserted owner: '{0}'", o.toString());
+                LOGGER.log(Level.INFO, "Inserted owner: {0}", o.toString());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -313,7 +313,7 @@ public class FXMLController {
             o.setId(this.selectedOwner.getId());
             try {
                 db.insertOwner(o);
-                LOGGER.log(Level.INFO, "Updated owner: '{0}'", o.toString());
+                LOGGER.log(Level.INFO, "Updated owner: {0}", o.toString());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -327,7 +327,7 @@ public class FXMLController {
             );
             try {
                 db.replaceOwner(o);
-                LOGGER.log(Level.INFO, "Replaced owner: '{0}'", o.toString());
+                LOGGER.log(Level.INFO, "Replaced owner: {0}", o.toString());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -336,7 +336,7 @@ public class FXMLController {
         if(event.getSource().equals(this.menuitem_owner_delete)) {
             try {
                 db.insertOwner(this.selectedOwner);
-                LOGGER.log(Level.INFO, "Deleted owner: '{0}'", this.selectedOwner.toString());
+                LOGGER.log(Level.INFO, "Deleted owner: {0}", this.selectedOwner.toString());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -354,7 +354,7 @@ public class FXMLController {
         if(event.getSource().equals(this.menuitem_owner_findrelevance)) {
             try {
                 this.owners.setAll(db.getAllOwnersOrderedByRelevance(this.owner_search_field.getText()));
-                LOGGER.log(Level.INFO, "Loaded all owners by relevance: '{0}'", this.owner_search_field.getText());
+                LOGGER.log(Level.INFO, "Loaded all owners by relevance: {0}", this.owner_search_field.getText());
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -372,7 +372,7 @@ public class FXMLController {
             
             try {
                 db.addOwnershipToCar(this.selectedCar, o);
-                LOGGER.log(Level.INFO, "Added ownership '{0}' to car '{1}'", new Object[] { o.toString(), this.selectedCar.toString() });
+                LOGGER.log(Level.INFO, "Added ownership {0} to car {1}", new Object[] { o.toString(), this.selectedCar.toString() });
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
@@ -381,7 +381,7 @@ public class FXMLController {
         if(event.getSource().equals(this.menuitem_ownership_removefromcar)) {
             try {
                 db.removeOwnershipFromCar(this.selectedCar, this.selectedOwnership);
-                LOGGER.log(Level.INFO, "Removed ownership '{0}' from car '{1}'", new Object[] { this.selectedOwnership.toString(), this.selectedCar.toString() });
+                LOGGER.log(Level.INFO, "Removed ownership {0} from car {1}", new Object[] { this.selectedOwnership.toString(), this.selectedCar.toString() });
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.toString(), ex);
             }
