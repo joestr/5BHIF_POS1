@@ -3,21 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pkg01cargeo;
+package pkg01cargeo.classes;
 
+import com.mongodb.client.model.geojson.Point;
 import org.bson.types.ObjectId;
 
 /**
  *
  * @author Gerald
  */
-public class Car {
+public class PetrolStation {
     private ObjectId _id;
-    private String carName;
-    private GeoPosition position;
+    private String stationName;
+    private Point position;
 
-    public Car(String carName, GeoPosition position) {
-        this.carName = carName;
+    public PetrolStation(String stName, Point position) {
+        this.stationName = stName;
         this.position = position;
     }
 
@@ -29,25 +30,25 @@ public class Car {
         this._id = oid;
     }
 
-    public String getCarName() {
-        return carName;
+    public String getStationName() {
+        return stationName;
     }
 
-    public void setCarName(String carName) {
-        this.carName = carName;
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
     }
 
-    public GeoPosition getPosition() {
+    public Point getPosition() {
         return position;
     }
 
-    public void setPosition(GeoPosition position) {
+    public void setPosition(Point position) {
         this.position = position;
     }
 
     @Override
     public String toString() {
-        return carName + ", " + position + " (" + _id + ")";
+        return stationName + ", " + position + " (" + _id + ")";
     }
     
     

@@ -3,11 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pkg01cargeo;
+package pkg01cargeo.classes;
 
 import com.mongodb.client.model.geojson.Point;
 import java.time.LocalDateTime;
-import org.bson.types.ObjectId;
 
 /**
  *
