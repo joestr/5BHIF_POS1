@@ -15,10 +15,12 @@ import org.bson.types.ObjectId;
 public class Car {
     private ObjectId _id;
     private String carName;
+    private FuelType fuelType;
     private GeoPosition position;
 
-    public Car(String carName, GeoPosition position) {
+    public Car(String carName, FuelType fuelType, GeoPosition position) {
         this.carName = carName;
+        this.fuelType = fuelType;
         this.position = position;
     }
 
@@ -38,6 +40,14 @@ public class Car {
         this.carName = carName;
     }
 
+    public FuelType getFuelType() {
+        return fuelType;
+    }
+
+    public void setFuelType(FuelType fuelType) {
+        this.fuelType = fuelType;
+    }
+
     public GeoPosition getPosition() {
         return position;
     }
@@ -48,7 +58,7 @@ public class Car {
 
     @Override
     public String toString() {
-        return carName + ", " + position + " (" + _id + ")";
+        return carName + ", " + fuelType + "," + position + " (" + _id + ")";
     }
     
     

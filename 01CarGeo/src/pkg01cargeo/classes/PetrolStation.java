@@ -6,6 +6,7 @@
 package pkg01cargeo.classes;
 
 import com.mongodb.client.model.geojson.Point;
+import java.util.List;
 import org.bson.types.ObjectId;
 
 /**
@@ -15,10 +16,12 @@ import org.bson.types.ObjectId;
 public class PetrolStation {
     private ObjectId _id;
     private String stationName;
+    private List<FuelType> providedFuelTypes;
     private Point position;
 
-    public PetrolStation(String stName, Point position) {
+    public PetrolStation(String stName, List<FuelType> providedFuelTypes, Point position) {
         this.stationName = stName;
+        this.providedFuelTypes = providedFuelTypes;
         this.position = position;
     }
 
@@ -38,6 +41,14 @@ public class PetrolStation {
         this.stationName = stationName;
     }
 
+    public List<FuelType> getProvidedFuelTypes() {
+        return providedFuelTypes;
+    }
+
+    public void setProvidedFuelTypes(List<FuelType> providedFuelTypes) {
+        this.providedFuelTypes = providedFuelTypes;
+    }
+
     public Point getPosition() {
         return position;
     }
@@ -48,7 +59,7 @@ public class PetrolStation {
 
     @Override
     public String toString() {
-        return stationName + ", " + position + " (" + _id + ")";
+        return stationName + ", " + providedFuelTypes + ", " + position + " (" + _id + ")";
     }
     
     

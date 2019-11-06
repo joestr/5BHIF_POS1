@@ -7,32 +7,27 @@ package pkg01cargeo;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Indexes;
 import java.util.ArrayList;
 import org.bson.Document;
 import pkg01cargeo.classes.Car;
 import pkg01cargeo.classes.PetrolStation;
 import com.mongodb.client.model.geojson.Position;
 import com.mongodb.client.model.geojson.Point;
-import java.lang.reflect.Type;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZoneOffset;
-import java.util.function.Consumer;
+import java.util.Arrays;
 import org.bson.types.ObjectId;
+import pkg01cargeo.classes.FuelType;
 import pkg01cargeo.classes.GeoPosition;
+import pkg01cargeo.serialzers.LocalDateTimeSerializer;
+import pkg01cargeo.serialzers.ObjectIdSerializer;
+import pkg01cargeo.serialzers.PointSerializer;
 
 /**
  *
@@ -40,69 +35,16 @@ import pkg01cargeo.classes.GeoPosition;
  */
 public class Database {
 
-    private static class LocalDateTimeSerializer implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
-        @Override
-        public JsonElement serialize(LocalDateTime date, Type type, JsonSerializationContext jsonSerializationContext) {
-            JsonObject json = new JsonObject();
-            json.addProperty("$date", date.toInstant(ZoneOffset.UTC).toEpochMilli());
-            return json;
-        }
-
-        @Override
-        public LocalDateTime deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return Instant.ofEpochMilli(jsonElement.getAsJsonObject().get("$date").getAsLong()).atZone(ZoneOffset.UTC).toLocalDateTime();
-        }
-    }
-
-    private static class ObjectIdSerializer implements JsonSerializer<ObjectId>, JsonDeserializer<ObjectId> {
-        @Override
-        public JsonElement serialize(ObjectId id, Type type, JsonSerializationContext jsonSerializationContext) {
-            JsonObject json = new JsonObject();
-            json.addProperty("$oid", id.toHexString());
-            return json;
-        }
-
-        @Override
-        public ObjectId deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return new ObjectId(jsonElement.getAsJsonObject().get("$oid").getAsString());
-        }
-    }
-    
-    private static class PointSerializer implements JsonSerializer<Point>, JsonDeserializer<Point> {
-
-        @Override
-        public JsonElement serialize(Point t, Type type, JsonSerializationContext jsc) {
-            JsonObject jo = new JsonObject();
-            JsonArray ja = new JsonArray();
-            ja.add(t.getCoordinates().getValues().get(0));
-            ja.add(t.getCoordinates().getValues().get(1));
-            jo.addProperty("type", "Point");
-            jo.add("coordinates", ja);
-            return jo;
-        }
-
-        @Override
-        public Point deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
-            return new Point(
-                new Position(
-                    je.getAsJsonObject().get("coordinates").getAsJsonArray().get(0).getAsDouble(),
-                    je.getAsJsonObject().get("coordinates").getAsJsonArray().get(1).getAsDouble()
-                )
-            );
-        }
-    
-}
-
     private static final Gson GSON =
         new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new LocalDateTimeSerializer())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
             .registerTypeAdapter(ObjectId.class, new ObjectIdSerializer())
             .registerTypeAdapter(Point.class, new PointSerializer())
             .create();
     
     private static final String DATABASENAME = "db_03CarGeo";
-    private static final String CARCOLLECTION = "Cars";
-    private static final String OWNERCOLLECTION = "PetrolStations";
+    private static final String COLLECTION_CARS = "Cars";
+    private static final String COLLECTION_PETROLSTATIONS = "PetrolStations";
 
     private static Database database = null;
     
@@ -123,8 +65,8 @@ public class Database {
             
             mongoDatabase = mongoClient.getDatabase(DATABASENAME);
             
-            carsCollection = mongoDatabase.getCollection(CARCOLLECTION);
-            petrolStationsCollection = mongoDatabase.getCollection(OWNERCOLLECTION);
+            carsCollection = mongoDatabase.getCollection(COLLECTION_CARS);
+            petrolStationsCollection = mongoDatabase.getCollection(COLLECTION_PETROLSTATIONS);
             
             collCars = new ArrayList<>();
             collPetrolStations = new ArrayList<>();
@@ -147,24 +89,139 @@ public class Database {
 
     public void generateData() throws Exception {
         collCars.clear();
-        collCars.add(new Car("Isetta Völkermarkt",
-                new GeoPosition(new Point(new Position(14.6, 46.7)),
-                        LocalDateTime.of(1990, Month.MARCH, 31, 7, 45))));
-        collCars.add(new Car("DKW Udine",
-                new GeoPosition(new Point(new Position(13.2, 46)),
-                        LocalDateTime.now())));
-        collCars.add(new Car("Rover Lienz",
-                new GeoPosition(new Point(new Position(12.8, 46.8)),
-                        LocalDateTime.of(1999, Month.DECEMBER, 31, 23, 45))));
+        collCars.add(
+            new Car(
+                "Isetta Völkermarkt",
+                FuelType.PETROL,
+                new GeoPosition(
+                    new Point(
+                        new Position(46.662222, 14.634444)
+                    ),
+                    LocalDateTime.of(1990, Month.MARCH, 31, 7, 45)
+                )
+            )
+        );
+        
+        collCars.add(
+            new Car(
+                "Suzuki Radenthein",
+                FuelType.PETROL,
+                new GeoPosition(
+                    new Point(
+                        new Position(46.8, 13.7)
+                    ),
+                    LocalDateTime.of(2019, Month.NOVEMBER, 6, 16, 50)
+                )
+            )
+        );
+        
+        collCars.add(
+            new Car(
+                "DKW Udine",
+                FuelType.DIESEL,
+                new GeoPosition(
+                    new Point(
+                        new Position(46.066667, 13.233333)
+                    ),
+                    LocalDateTime.now()
+                )
+            )
+        );
+        
+        collCars.add(
+            new Car(
+                "Rover Lienz",
+                FuelType.DIESEL,
+                new GeoPosition(
+                    new Point(
+                        new Position(46.829722, 12.769722)
+                    ),
+                    LocalDateTime.of(1999, Month.DECEMBER, 31, 23, 45)
+                )
+            )
+        );
+        
+        collCars.add(
+            new Car(
+                "Tesla Murau",
+                FuelType.ELECTRIC,
+                new GeoPosition(
+                    new Point(
+                        new Position(47.111944, 14.173056)
+                    ),
+                    LocalDateTime.of(2018, Month.JULY, 26, 7, 9)
+                )
+            )
+        );
+        
         collPetrolStations.clear();
-        collPetrolStations.add(new PetrolStation("Esso Villach",
-                new Point(new Position(13.9, 46.6))));
-        collPetrolStations.add(new PetrolStation("Avanti Klagenfurt",
-                new Point(new Position(14.3, 46.6))));
-        collPetrolStations.add(new PetrolStation("LH Spittal",
-                new Point(new Position(13.5, 46.8))));
+        
+        collPetrolStations.add(
+            new PetrolStation(
+                "Esso Villach",
+                Arrays.asList(FuelType.DIESEL, FuelType.PETROL),
+                new Point(
+                    new Position(46.614722, 13.846111)
+                )
+            )
+        );
+        
+        collPetrolStations.add(
+            new PetrolStation(
+                "Tesla Supercharger Villach",
+                Arrays.asList(FuelType.ELECTRIC),
+                new Point(
+                    new Position(46.614722, 13.846111)
+                )
+            )
+        );
+        
+        collPetrolStations.add(
+            new PetrolStation(
+                "BP Afritz",
+                Arrays.asList(FuelType.DIESEL, FuelType.PETROL, FuelType.ELECTRIC),
+                new Point(
+                    new Position(46.7275, 13.8)
+                )
+            )
+        );
+        
+        collPetrolStations.add(
+            new PetrolStation(
+                "Avanti Klagenfurt",
+                Arrays.asList(FuelType.DIESEL, FuelType.ELECTRIC),
+                new Point(
+                    new Position(46.617778, 14.305556)
+                )
+            )
+        );
+        
+        collPetrolStations.add(
+            new PetrolStation(
+                "LH Spittal",
+                Arrays.asList(FuelType.DIESEL, FuelType.PETROL),
+                new Point(
+                    new Position(46.791667, 13.495833)
+                )
+            )
+        );
     }
 
+    public void createSpatialIndex() {
+        
+        MongoCollection collection = mongoDatabase.getCollection(COLLECTION_CARS);
+        if(collection != null) collection.drop();
+        mongoDatabase.createCollection(COLLECTION_CARS);
+        collection = mongoDatabase.getCollection(COLLECTION_CARS);
+        collection.createIndex(Indexes.geo2dsphere("position.location"));
+        
+        collection = mongoDatabase.getCollection(COLLECTION_PETROLSTATIONS);
+        if(collection != null) collection.drop();
+        mongoDatabase.createCollection(COLLECTION_PETROLSTATIONS);
+        collection = mongoDatabase.getCollection(COLLECTION_PETROLSTATIONS);
+        collection.createIndex(Indexes.geo2dsphere("position"));
+    }
+    
     public void saveToMongo() {
         collPetrolStations.forEach((petrolStation) -> {
             petrolStationsCollection.insertOne(
@@ -182,24 +239,80 @@ public class Database {
             );
         });
     }
+
+    /**
+     * Gets all {@link Car cars} from the database.
+     * @return A {@link ArrayList list} of cars
+     */
+    public ArrayList<Car> getAllCars() {
+        ArrayList<Car> result = new ArrayList<>();
+        
+        MongoCollection<Document> c =
+            mongoDatabase.getCollection(COLLECTION_CARS);
+        
+        FindIterable<Document> cF = c.find();
+        
+        for(Document d : cF) {
+            result.add(
+                GSON.fromJson(d.toJson(), Car.class)
+            );
+        }
+        
+        return result;
+    }
     
-    public void readFromMongo() {
-        collCars.clear();
+    /**
+     * Gets all {@link PetrolStation petrol stations} from the database.
+     * @return A {@link ArrayList list} of petrol stations
+     */
+    public ArrayList<PetrolStation> getAllPetrolStations() {
+        ArrayList<PetrolStation> result = new ArrayList<>();
         
-        carsCollection.find().forEach( new Consumer<Document>() {
-            @Override
-            public void accept(Document t) {
-                collCars.add(GSON.fromJson(t.toJson(), Car.class));
-            }
-        });
+        MongoCollection<Document> c =
+            mongoDatabase.getCollection(COLLECTION_PETROLSTATIONS);
         
-        collPetrolStations.clear();
+        FindIterable<Document> cF = c.find();
         
-        petrolStationsCollection.find().forEach( new Consumer<Document>() {
-            @Override
-            public void accept(Document t) {
-                collPetrolStations.add(GSON.fromJson(t.toJson(), PetrolStation.class));
-            }
-        });
+        for(Document d : cF) {
+            result.add(
+                GSON.fromJson(d.toJson(), PetrolStation.class)
+            );
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets all {@link PetrolStation petrol stations} nearby the given
+     * {@link Car car} and distance.
+     * @param car The car
+     * @param distance The maximum distance to search for a petrol station.
+     * @return A {@link ArrayList list} of petrol stations
+     */
+    public ArrayList<PetrolStation> getAllPetrolStationsNearbyCar(Car car, double distance) {
+        ArrayList<PetrolStation> result = new ArrayList<>();
+        
+        MongoCollection<Document> c =
+            mongoDatabase.getCollection(COLLECTION_PETROLSTATIONS);
+        
+        FindIterable<Document> fC = c.find(
+            Filters.and(
+                Filters.geoWithinCenterSphere(
+                    "position",
+                    car.getPosition().getLocation().getCoordinates().getValues().get(0),
+                    car.getPosition().getLocation().getCoordinates().getValues().get(1),
+                    distance / 6378.1
+                ),
+                Filters.in("providedFuelTypes", car.getFuelType().toString())
+            )
+        );
+        
+        for(Document d : fC) {
+            result.add(
+                GSON.fromJson(d.toJson(), PetrolStation.class)
+            );
+        }
+        
+        return result;
     }
 }

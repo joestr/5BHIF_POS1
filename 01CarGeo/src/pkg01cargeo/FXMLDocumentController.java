@@ -10,11 +10,14 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 
 public class FXMLDocumentController {
 
@@ -28,19 +31,16 @@ public class FXMLDocumentController {
     private URL location;
 
     @FXML
-    private Label label;
-
-    @FXML
-    private MenuItem menuitem_database_initialize;
-
-    @FXML
     private MenuItem menuitem_database_createspatialindex;
 
     @FXML
-    private MenuItem menuitem_database_readcarsandpetrolstations;
+    private MenuItem menuitem_database_insertdata;
 
     @FXML
-    private MenuItem menuitem_database_petrolstationsinneighborhood;
+    private MenuItem menuitem_operations_loadallcarsandpetrolstations;
+
+    @FXML
+    private MenuItem menuitem_operations_petrolstationsinneighborhood;
 
     @FXML
     private ListView<Car> listview_car_cars;
@@ -50,10 +50,17 @@ public class FXMLDocumentController {
 
     @FXML
     private Label label_logger;
+    
+    @FXML
+    private TextField textfield_distance;
 
     @FXML
-    void onActionButton(ActionEvent event) {
-        if(event.getSource().equals(this.menuitem_database_initialize)) {
+    void onActionButton(ActionEvent event) {        
+        if(event.getSource().equals(this.menuitem_database_createspatialindex)) {
+            db.createSpatialIndex();
+        }
+        
+        if(event.getSource().equals(this.menuitem_database_insertdata)) {
             try {
                 db.generateData();
             } catch (Exception ex) {
@@ -62,29 +69,44 @@ public class FXMLDocumentController {
             db.saveToMongo();
         }
         
-        if(event.getSource().equals(this.menuitem_database_createspatialindex)) {
+        if(event.getSource().equals(this.menuitem_operations_loadallcarsandpetrolstations)) {
             
+            this.obsCars.setAll(db.getAllCars());
+            this.obsPetrolStations.setAll(db.getAllPetrolStations());
         }
         
-        if(event.getSource().equals(this.menuitem_database_readcarsandpetrolstations)) {
+        if(event.getSource().equals(this.menuitem_operations_petrolstationsinneighborhood)) {
+            Car c = this.listview_car_cars.getSelectionModel().getSelectedItem();
+            double d = 0d;
             
-        }
-        
-        if(event.getSource().equals(this.menuitem_database_petrolstationsinneighborhood)) {
+            try {
+                d = Double.parseDouble(this.textfield_distance.getText()) /* 1000*/;
+            } catch(Exception e) {
+                LOGGER.log(
+                    Level.SEVERE,
+                    e.getMessage(),
+                    e
+                );
+            }
             
+            if(c == null) {
+                LOGGER.log(
+                    Level.WARNING,
+                    "No car selected!"
+                );
+                return;
+            }
+            
+            this.obsPetrolStations.setAll(db.getAllPetrolStationsNearbyCar(c, d));
         }
     }
 
+    private ObservableList<Car> obsCars = FXCollections.observableArrayList();
+    private ObservableList<PetrolStation> obsPetrolStations = FXCollections.observableArrayList();
+    
     @FXML
-    void initialize() {
-        assert label != null : "fx:id=\"label\" was not injected: check your FXML file 'FXMLDocument.fxml'.";
-        assert menuitem_database_initialize != null : "fx:id=\"menuitem_database_initialize\" was not injected: check your FXML file 'FXMLDocument.fxml'.";
-        assert menuitem_database_createspatialindex != null : "fx:id=\"menuitem_database_createspatialindex\" was not injected: check your FXML file 'FXMLDocument.fxml'.";
-        assert menuitem_database_readcarsandpetrolstations != null : "fx:id=\"menuitem_database_readcarsandpetrolstations\" was not injected: check your FXML file 'FXMLDocument.fxml'.";
-        assert menuitem_database_petrolstationsinneighborhood != null : "fx:id=\"menuitem_database_petrolstationsinneighborhood\" was not injected: check your FXML file 'FXMLDocument.fxml'.";
-        assert listview_car_cars != null : "fx:id=\"listview_car_cars\" was not injected: check your FXML file 'FXMLDocument.fxml'.";
-        assert listview_petrolstation_petrolstations != null : "fx:id=\"listview_petrolstation_petrolstations\" was not injected: check your FXML file 'FXMLDocument.fxml'.";
-        assert label_logger != null : "fx:id=\"label_logger\" was not injected: check your FXML file 'FXMLDocument.fxml'.";
+    void initialize() {        
+        this.listview_car_cars.getSelectionModel().getSelectedItem();
         
         try {
             db = Database.getInstance("127.0.0.1");
@@ -93,6 +115,9 @@ public class FXMLDocumentController {
         }
         
         this.attachLoggerToLabel();
+        
+        this.listview_car_cars.setItems(obsCars);
+        this.listview_petrolstation_petrolstations.setItems(obsPetrolStations);
     }
     
     private void attachLoggerToLabel() {
@@ -129,6 +154,5 @@ public class FXMLDocumentController {
             }
         );
     }
-    
     
 }
