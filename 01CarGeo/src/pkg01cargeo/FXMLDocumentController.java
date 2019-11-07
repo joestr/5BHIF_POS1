@@ -15,6 +15,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -42,6 +44,9 @@ public class FXMLDocumentController {
 
     @FXML
     private MenuItem menuitem_operations_petrolstationsinneighborhood;
+    
+    @FXML
+    private MenuItem menuitem_help_about;
 
     @FXML
     private ListView<Car> listview_car_cars;
@@ -104,6 +109,21 @@ public class FXMLDocumentController {
                 "Filtered all petrol stations in a radius of {0}km which offer {1}!",
                 new Object[] {d, c.getFuelType()}
             );
+        }
+        
+        if(event.getSource().equals(this.menuitem_help_about)) {
+            
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Help -> About");
+            alert.setHeaderText(null);
+            alert.setContentText(
+                "(c) G. Ortner, J. Strasser\n"
+                    + "\n"
+                    + "All Lat/Long coordinates from:\n"
+                    + "https://www.luftlinie.org/"
+            );
+
+            alert.showAndWait();
         }
     }
 

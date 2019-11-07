@@ -95,7 +95,7 @@ public class Database {
                 FuelType.PETROL,
                 new GeoPosition(
                     new Point(
-                        new Position(46.662222, 14.634444)
+                        new Position(14.634444, 46.662222)
                     ),
                     LocalDateTime.of(1990, Month.MARCH, 31, 7, 45)
                 )
@@ -108,7 +108,7 @@ public class Database {
                 FuelType.PETROL,
                 new GeoPosition(
                     new Point(
-                        new Position(46.8, 13.7)
+                        new Position(13.7, 46.8)
                     ),
                     LocalDateTime.of(2019, Month.NOVEMBER, 6, 16, 50)
                 )
@@ -121,7 +121,7 @@ public class Database {
                 FuelType.DIESEL,
                 new GeoPosition(
                     new Point(
-                        new Position(46.066667, 13.233333)
+                        new Position(13.233333, 46.066667)
                     ),
                     LocalDateTime.now()
                 )
@@ -134,7 +134,7 @@ public class Database {
                 FuelType.DIESEL,
                 new GeoPosition(
                     new Point(
-                        new Position(46.829722, 12.769722)
+                        new Position(12.769722, 46.829722)
                     ),
                     LocalDateTime.of(1999, Month.DECEMBER, 31, 23, 45)
                 )
@@ -147,7 +147,7 @@ public class Database {
                 FuelType.ELECTRIC,
                 new GeoPosition(
                     new Point(
-                        new Position(47.111944, 14.173056)
+                        new Position(14.173056, 47.111944)
                     ),
                     LocalDateTime.of(2018, Month.JULY, 26, 7, 9)
                 )
@@ -161,7 +161,7 @@ public class Database {
                 "Esso Villach",
                 Arrays.asList(FuelType.DIESEL, FuelType.PETROL),
                 new Point(
-                    new Position(46.614722, 13.846111)
+                    new Position(13.846111, 46.614722)
                 )
             )
         );
@@ -171,7 +171,7 @@ public class Database {
                 "Tesla Supercharger Villach",
                 Arrays.asList(FuelType.ELECTRIC),
                 new Point(
-                    new Position(46.614722, 13.846111)
+                    new Position(13.846111, 46.614722)
                 )
             )
         );
@@ -181,7 +181,7 @@ public class Database {
                 "BP Afritz",
                 Arrays.asList(FuelType.DIESEL, FuelType.PETROL, FuelType.ELECTRIC),
                 new Point(
-                    new Position(46.7275, 13.8)
+                    new Position(13.8, 46.7275)
                 )
             )
         );
@@ -191,7 +191,7 @@ public class Database {
                 "Avanti Klagenfurt",
                 Arrays.asList(FuelType.DIESEL, FuelType.ELECTRIC),
                 new Point(
-                    new Position(46.617778, 14.305556)
+                    new Position(14.305556, 46.617778)
                 )
             )
         );
@@ -201,7 +201,7 @@ public class Database {
                 "LH Spittal",
                 Arrays.asList(FuelType.DIESEL, FuelType.PETROL),
                 new Point(
-                    new Position(46.791667, 13.495833)
+                    new Position(13.495833, 46.791667)
                 )
             )
         );
