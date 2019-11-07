@@ -8,12 +8,14 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="414.0" prefWidth="1409.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.joestr.school._5bhif.pos1._01car.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="625.0" prefWidth="1409.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.joestr.school._5bhif.pos1._01car.FXMLController">
     <children>
         <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
       <MenuBar prefHeight="25.0" prefWidth="1409.0">
@@ -51,6 +53,11 @@
                   <MenuItem fx:id="menuitem_ownership_removefromcar" mnemonicParsing="false" onAction="#onActionMenuOwnership" text="Remove from car" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Delicts">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
       <TextField id="textfield_connection-ip" fx:id="textfield_database_ip" layoutX="10.0" layoutY="35.0" prefHeight="25.0" prefWidth="149.0" promptText="Database IP" text="127.0.0.1" />
@@ -60,7 +67,7 @@
       <ListView id="listview_car-list" fx:id="listview_cars" layoutX="161.0" layoutY="95.0" prefHeight="275.0" prefWidth="300.0" />
       <TextArea fx:id="textarea_car_description" layoutX="11.0" layoutY="145.0" prefHeight="150.0" prefWidth="150.0" promptText="Car description" />
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-      <Text fx:id="text_label" layoutX="15.0" layoutY="394.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="1380.13671875" />
+      <Text fx:id="text_label" layoutX="14.0" layoutY="607.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="1380.13671875" />
       <TextField fx:id="textfield_car_search" layoutX="161.0" layoutY="70.0" prefHeight="25.0" prefWidth="250.0" promptText="Search field" />
       <Accordion layoutX="953.0" layoutY="104.0" />
       <TextField fx:id="textfield_owner_name" layoutX="940.0" layoutY="70.0" prefWidth="150.0" promptText="Owner name" />
@@ -73,5 +80,14 @@
       <ListView fx:id="listview_ownerships" layoutX="621.0" layoutY="70.0" prefHeight="300.0" prefWidth="300.0" />
       <DatePicker fx:id="datepicker_ownership_start" layoutX="471.0" layoutY="70.0" prefWidth="150.0" promptText="Ownership start" />
       <DatePicker fx:id="datepicker_ownership_end" layoutX="471.0" layoutY="95.0" prefWidth="150.0" promptText="Ownership end" />
+      <TableView fx:id="tableview_delicts_delicts" layoutX="160.0" layoutY="381.0" prefHeight="200.0" prefWidth="464.0">
+        <columns>
+          <TableColumn prefWidth="75.0" text="C1" />
+          <TableColumn prefWidth="75.0" text="C2" />
+        </columns>
+      </TableView>
+      <DatePicker fx:id="datepicker_delicts_date" layoutX="12.0" layoutY="381.0" prefHeight="25.0" prefWidth="149.0" promptText="Date" />
+      <TextArea fx:id="textarea_delicts_notice" layoutX="12.0" layoutY="431.0" prefHeight="124.0" prefWidth="149.0" promptText="Notice" />
+      <TextField fx:id="textfield_delicts_penalty" layoutX="11.0" layoutY="406.0" prefHeight="25.0" prefWidth="149.0" promptText="Penalty" />
     </children>
 </AnchorPane>
