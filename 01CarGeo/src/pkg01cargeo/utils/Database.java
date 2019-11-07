@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pkg01cargeo;
+package pkg01cargeo.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -87,7 +87,7 @@ public class Database {
         database = null;
     }
 
-    public void generateData() throws Exception {
+    public void generateData() {
         collCars.clear();
         collCars.add(
             new Car(

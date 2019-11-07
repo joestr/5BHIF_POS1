@@ -1,5 +1,6 @@
 package pkg01cargeo;
 
+import pkg01cargeo.utils.Database;
 import pkg01cargeo.classes.Car;
 import pkg01cargeo.classes.PetrolStation;
 import java.net.URL;
@@ -58,21 +59,20 @@ public class FXMLDocumentController {
     void onActionButton(ActionEvent event) {        
         if(event.getSource().equals(this.menuitem_database_createspatialindex)) {
             db.createSpatialIndex();
+            LOGGER.log(Level.INFO, "Created Spatial index!");
         }
         
         if(event.getSource().equals(this.menuitem_database_insertdata)) {
-            try {
-                db.generateData();
-            } catch (Exception ex) {
-                Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            db.generateData();
             db.saveToMongo();
+            LOGGER.log(Level.INFO, "Generated and saved data to Mongo!");
         }
         
         if(event.getSource().equals(this.menuitem_operations_loadallcarsandpetrolstations)) {
             
             this.obsCars.setAll(db.getAllCars());
             this.obsPetrolStations.setAll(db.getAllPetrolStations());
+            LOGGER.log(Level.INFO, "Loaded all cars and petrol stations!");
         }
         
         if(event.getSource().equals(this.menuitem_operations_petrolstationsinneighborhood)) {
@@ -84,9 +84,9 @@ public class FXMLDocumentController {
             } catch(Exception e) {
                 LOGGER.log(
                     Level.SEVERE,
-                    e.getMessage(),
-                    e
+                    e.getMessage()
                 );
+                return;
             }
             
             if(c == null) {
@@ -98,6 +98,12 @@ public class FXMLDocumentController {
             }
             
             this.obsPetrolStations.setAll(db.getAllPetrolStationsNearbyCar(c, d));
+            
+            LOGGER.log(
+                Level.INFO,
+                "Filtered all petrol stations in a radius of {0}km which offer {1}!",
+                new Object[] {d, c.getFuelType()}
+            );
         }
     }
 
@@ -111,7 +117,7 @@ public class FXMLDocumentController {
         try {
             db = Database.getInstance("127.0.0.1");
         } catch (Exception ex) {
-            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, ex.getMessage());
         }
         
         this.attachLoggerToLabel();
