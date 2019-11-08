@@ -7,9 +7,13 @@ package pkg01cargeo.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
 import com.mongodb.MongoClient;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
@@ -22,6 +26,8 @@ import com.mongodb.client.model.geojson.Point;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import org.bson.types.ObjectId;
 import pkg01cargeo.classes.FuelType;
 import pkg01cargeo.classes.GeoPosition;
@@ -297,11 +303,11 @@ public class Database {
         
         FindIterable<Document> fC = c.find(
             Filters.and(
-                Filters.geoWithinCenterSphere(
+                Filters.near(
                     "position",
-                    car.getPosition().getLocation().getCoordinates().getValues().get(0),
-                    car.getPosition().getLocation().getCoordinates().getValues().get(1),
-                    distance / 6378.1
+                    car.getPosition().getLocation(),
+                    distance,
+                    0d
                 ),
                 Filters.in("providedFuelTypes", car.getFuelType().toString())
             )
@@ -311,6 +317,71 @@ public class Database {
             result.add(
                 GSON.fromJson(d.toJson(), PetrolStation.class)
             );
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Calculates the distance (in kilometers) from a car to a specific petrol
+     * station.
+     * @param car The car
+     * @param petrolStation The petrol station
+     * @return The distance in kilometers
+     */
+    public double distanceBetween(Car car, PetrolStation petrolStation) {
+        
+        // The final command object
+        BasicDBObject distance = new BasicDBObject();
+        
+        // Represents the parameters of the command
+        BasicDBObject distanceData = new BasicDBObject();
+        
+        // The origin location has to be provided
+        Double[] loc =
+            car.getPosition().getLocation().getPosition().getValues().toArray(
+                new Double[0]
+            );
+        distanceData.append("near", loc);
+        
+        // We want to use a sphere
+        distanceData.append("spherical", true);
+        
+        // With "query" we can limit the geospatial query to specific docs
+        distanceData.append(
+            "query",
+            Filters.eq("_id", petrolStation.getOid())
+        );
+        
+        // The maximal distance in meters
+        distanceData.append("maxDistance", 15000000);
+        
+        // Where the calculated distance will be available
+        distanceData.append("distanceField", "__dist_calculated");
+        
+        // To get kilometers back (Why 6379.137? Earths radius.)
+        distanceData.append("distanceMultiplier", 6378.137);
+        
+        // Chain the parameters to the command
+        distance.append("$geoNear", distanceData);
+        
+        AggregateIterable<Document> docs =
+            mongoDatabase.getCollection(COLLECTION_PETROLSTATIONS)
+                .aggregate(
+                    Arrays.asList(
+                        distance
+                    )
+                );
+        
+        double result;
+        
+        Document doc = docs.first();
+        
+        // Could be null so we stay on the safe side
+        if(doc == null) {
+            result = -1d;
+        } else {
+            result = docs.first().getDouble("__dist_calculated");
         }
         
         return result;

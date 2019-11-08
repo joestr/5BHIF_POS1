@@ -8,9 +8,9 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" prefHeight="322.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkg01cargeo.FXMLDocumentController">
+<AnchorPane id="AnchorPane" prefHeight="325.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkg01cargeo.FXMLDocumentController">
     <children>
-      <MenuBar prefHeight="25.0" prefWidth="600.0">
+      <MenuBar prefHeight="25.0" prefWidth="816.0">
         <menus>
           <Menu mnemonicParsing="false" text="Database">
             <items>
@@ -22,6 +22,7 @@
                <items>
                   <MenuItem fx:id="menuitem_operations_loadallcarsandpetrolstations" mnemonicParsing="false" onAction="#onActionButton" text="Load all cars and petrol stations" />
                   <MenuItem fx:id="menuitem_operations_petrolstationsinneighborhood" mnemonicParsing="false" onAction="#onActionButton" text="Petrol stations in neighborhood" />
+                  <MenuItem fx:id="menuitem_operations_distancebetweencarandpetrolstation" mnemonicParsing="false" onAction="#onActionButton" text="Distance between car and petrol station" />
                </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Help">
@@ -31,11 +32,14 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ListView fx:id="listview_car_cars" layoutX="10.0" layoutY="61.0" prefHeight="200.0" prefWidth="250.0" />
-      <ListView fx:id="listview_petrolstation_petrolstations" layoutX="286.0" layoutY="61.0" prefHeight="200.0" prefWidth="250.0" />
+      <ListView fx:id="listview_car_cars" layoutX="10.0" layoutY="62.0" prefHeight="200.0" prefWidth="390.0" />
+      <ListView fx:id="listview_petrolstation_petrolstations" layoutX="416.0" layoutY="62.0" prefHeight="200.0" prefWidth="390.0" />
       <Label layoutX="10.0" layoutY="35.0" text="Cars:" />
-      <Label layoutX="286.0" layoutY="35.0" text="Petrol stations:" />
-      <Label fx:id="label_logger" layoutX="10.0" layoutY="297.0" text="Logger label" />
-      <TextField fx:id="textfield_distance" layoutX="10.0" layoutY="267.0" promptText="Distance" />
+      <Label layoutX="417.0" layoutY="35.0" text="Petrol stations:" />
+      <Label fx:id="label_logger" layoutX="10.0" layoutY="298.0" text="Logger label" />
+      <TextField fx:id="textfield_distance" layoutX="10.0" layoutY="268.0" promptText="Distance" />
+      <Label layoutX="286.0" layoutY="271.0" />
+      <Label layoutX="417.0" layoutY="272.0" text="Distance between car and petrol station:" />
+      <TextField fx:id="textfield_distancebetween" editable="false" layoutX="636.0" layoutY="268.0" promptText="Distance" />
     </children>
 </AnchorPane>

@@ -44,7 +44,10 @@ public class FXMLDocumentController {
 
     @FXML
     private MenuItem menuitem_operations_petrolstationsinneighborhood;
-    
+
+    @FXML
+    private MenuItem menuitem_operations_distancebetweencarandpetrolstation;
+
     @FXML
     private MenuItem menuitem_help_about;
 
@@ -56,9 +59,12 @@ public class FXMLDocumentController {
 
     @FXML
     private Label label_logger;
-    
+
     @FXML
     private TextField textfield_distance;
+
+    @FXML
+    private TextField textfield_distancebetween;
 
     @FXML
     void onActionButton(ActionEvent event) {        
@@ -85,7 +91,7 @@ public class FXMLDocumentController {
             double d = 0d;
             
             try {
-                d = Double.parseDouble(this.textfield_distance.getText()) /* 1000*/;
+                d = Double.parseDouble(this.textfield_distance.getText());
             } catch(Exception e) {
                 LOGGER.log(
                     Level.SEVERE,
@@ -102,12 +108,48 @@ public class FXMLDocumentController {
                 return;
             }
             
-            this.obsPetrolStations.setAll(db.getAllPetrolStationsNearbyCar(c, d));
+            this.obsPetrolStations.setAll(db.getAllPetrolStationsNearbyCar(c, d*1000));
             
             LOGGER.log(
                 Level.INFO,
                 "Filtered all petrol stations in a radius of {0}km which offer {1}!",
                 new Object[] {d, c.getFuelType()}
+            );
+        }
+        
+        if(event.getSource().equals(this.menuitem_operations_distancebetweencarandpetrolstation)) {
+            
+            Car c = this.listview_car_cars.getSelectionModel().getSelectedItem();
+            PetrolStation pS = this.listview_petrolstation_petrolstations.getSelectionModel().getSelectedItem();
+            
+            if(c == null) {
+                LOGGER.log(
+                    Level.WARNING,
+                    "No car selected!"
+                );
+                return;
+            }
+            
+            if(pS == null) {
+                LOGGER.log(
+                    Level.WARNING,
+                    "No petrol station selected!"
+                );
+                return;
+            }
+            
+            double resultDistance = db.distanceBetween(c, pS);
+            
+            this.textfield_distancebetween.setText(String.valueOf(resultDistance));
+            
+            LOGGER.log(
+                Level.INFO,
+                "The distance between car {0} and petrol station {1} is {2}km!",
+                new Object[] {
+                    c.getCarName(),
+                    pS.getStationName(),
+                    resultDistance
+                }
             );
         }
         
@@ -117,9 +159,7 @@ public class FXMLDocumentController {
             alert.setTitle("Help -> About");
             alert.setHeaderText(null);
             alert.setContentText(
-                "(c) G. Ortner, J. Strasser\n"
-                    + "\n"
-                    + "All Lat/Long coordinates from:\n"
+                "All Lat/Long coordinates from:\n"
                     + "https://www.luftlinie.org/"
             );
 
