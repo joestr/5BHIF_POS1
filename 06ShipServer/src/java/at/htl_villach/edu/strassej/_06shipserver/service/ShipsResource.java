@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.htl_villach.edu.strassej._05shipserver.service;
+package at.htl_villach.edu.strassej._06shipserver.service;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
