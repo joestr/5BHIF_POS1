@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import org.bson.types.ObjectId;
 import at.htl_villach.edu.strassej._06shipserver.data.Database;
 import at.htl_villach.edu.strassej._06shipserver.data.MongoLogPositionEntry;
+import javax.ws.rs.Produces;
 
 /**
  * REST Web Service
@@ -50,7 +51,7 @@ public class Position {
     }
 
     @GET
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public Response getPosition() throws Exception {
         Response.ResponseBuilder response = Response.status(Response.Status.CREATED);
         try {
