@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinnerItems">
+        <item>Ronacher Fels</item>
+        <item>Paternzipf</item>
+        <item>Techendorf</item>
+        <item>Dolomitenblick</item>
+    </string-array>
+</resources>
