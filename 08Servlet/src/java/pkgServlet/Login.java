@@ -35,10 +35,15 @@ public class Login extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Login</title>");            
+            out.println("<title>Login</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Login at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Login</h1>");
+            out.println("<form action=\"\" method=\"GET\">");
+            out.println("<label for=\"login_form_login\">Username:</label><input id=\"login_form_login\" type=\"text\" name=\"username\" />");
+            out.println("<label for=\"login_form_password\">Password:</label><input id=\"login_form_password\" type=\"password\" name=\"username\" />");
+            out.println("<input type=\"submit\"/>");
+            out.println("</form>");
             out.println("</body>");
             out.println("</html>");
         }
