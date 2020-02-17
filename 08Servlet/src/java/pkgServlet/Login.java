@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Login extends HttpServlet {
 
+    private int counter = 0;
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -29,21 +31,47 @@ public class Login extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
+        
+        String u = request.getParameter("username");
+        String p = request.getParameter("password");
+        
+        String r = request.getParameter("reset");
+        
+        if(r != null) {
+            u = null;
+            p = null;
+        }
+        
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Login</title>");            
+            out.println("<title>Krankenhaus Hamburg Altona - Anmelden</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Login</h1>");
+            out.println("<h1>Krankenhaus Hamburg Altona - Anmelden</h1>");
             out.println("<form action=\"\" method=\"GET\">");
-            out.println("<label for=\"login_form_login\">Username:</label><input id=\"login_form_login\" type=\"text\" name=\"username\" />");
-            out.println("<label for=\"login_form_password\">Password:</label><input id=\"login_form_password\" type=\"password\" name=\"username\" />");
-            out.println("<input type=\"submit\"/>");
+            out.println("<label for=\"login_form_login\">Username:</label><input id=\"login_form_login\" type=\"text\" name=\"username\" value=\"" + (u == null ? "" : u)  + "\"/><br />");
+            out.println("<label for=\"login_form_password\">Password:</label><input id=\"login_form_password\" type=\"password\" name=\"password\" value=\"" + (p == null ? "" : p)  + "\"/><br />");
+            out.println("<input type=\"submit\" value=\"submit\"/>");
             out.println("</form>");
+            out.println("<form action=\"\" method=\"GET\"><input type=\"submit\" name=\"reset\" value=\"reset\"/></form>");
+            out.println("<br />");
+            
+            if(u == null || p == null) {
+                out.print("type in username and password");
+            } else if (u.equals(p)) {
+                out.print("login details correct");
+            } else {
+                out.print("incorrect login details");
+            }
+            
+            out.println("(hits: " + ++counter + ")");
+            out.println("<p>");
+            out.println("<img width=\"64px\" height=\"64px\" src=\"" + request.getContextPath().split("//")[0] + "/assets/netscape.gif" + "\" alt=\"netscape\" /> Works best in Netscape&reg; Navigator");
+            out.println("<p>");
             out.println("</body>");
             out.println("</html>");
         }
