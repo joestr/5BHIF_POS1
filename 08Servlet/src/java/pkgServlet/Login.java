@@ -7,10 +7,18 @@ package pkgServlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import pkgData.Database;
+import pkgData.User;
+import xyz.joestr.dbwrapper.DatabaseAnnotationWrapper;
+import xyz.joestr.dbwrapper.DatabaseWrapper;
 
 /**
  *
@@ -45,35 +53,55 @@ public class Login extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Krankenhaus Hamburg Altona - Anmelden</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Krankenhaus Hamburg Altona - Anmelden</h1>");
-            out.println("<form action=\"\" method=\"GET\">");
-            out.println("<label for=\"login_form_login\">Username:</label><input id=\"login_form_login\" type=\"text\" name=\"username\" value=\"" + (u == null ? "" : u)  + "\"/><br />");
-            out.println("<label for=\"login_form_password\">Password:</label><input id=\"login_form_password\" type=\"password\" name=\"password\" value=\"" + (p == null ? "" : p)  + "\"/><br />");
-            out.println("<input type=\"submit\" value=\"submit\"/>");
-            out.println("</form>");
-            out.println("<form action=\"\" method=\"GET\"><input type=\"submit\" name=\"reset\" value=\"reset\"/></form>");
-            out.println("<br />");
             
-            if(u == null || p == null) {
-                out.print("type in username and password");
-            } else if (u.equals(p)) {
-                out.print("login details correct");
-            } else {
-                out.print("incorrect login details");
+            String result =
+                "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "    <head>\n" +
+                "        <title>KH Hamburg Altona - Anmelden</title>\n" +
+                "    </head>\n" +
+                "    <body>\n" +
+                "        <h1>KH Hamburg Altona - Anmelden</h1>\n" +
+                "        <form action=\"\" method=\"GET\">\n" +
+                "            <label for=\"login-form_login\">Benutzername:</label><input id=\"login-form_login\" type=\"text\" name=\"username\" value=\"$$$userval\"/><br />\n" +
+                "            <label for=\"login-form_password\">Password:</label><input id=\"login-form_password\" type=\"password\" name=\"password\" value=\"$$$passval\"/><br />\n" +
+                "            <input type=\"submit\" value=\"submit\"/>\n" +
+                "        </form>\n" +
+                "        <form action=\"\" method=\"GET\">\n" +
+                "            <input type=\"submit\" name=\"reset\" value=\"reset\"/>\n" +
+                "        </form>\n" +
+                "        <br />\n" +
+                "        $$$bottomline $$$hitcounter<br />\n" +
+                "        <p>\n" +
+                "            <img width=\"32px\" height=\"32px\" src=\"$$$netscapegif\" alt=\"netscape\" /> Works best in Netscape&reg; Navigator\"\n" +
+                "        </p>\n" +
+                "    </body>\n" +
+                "</html>";
+            
+            result = result.replace("$$$userval", (u == null ? "" : u));
+            result = result.replace("$$$passval", (p == null ? "" : p));
+            
+            try {
+                // !!!!!!!!!! UNSAFE OPERATION SQL INJECTION AHEAD !!!!!!!!!!
+                ArrayList<User> s =
+                    (ArrayList<User>) Database.getInstance().getUserWrapper().select("username = '" + u + "' AND password = '" + p + "'");
+                
+                if(u == null || p == null) {
+                    result = result.replace("$$$bottomline", "type in username and password");
+                } else if (s.isEmpty()) {
+                    result = result.replace("$$$bottomline", "incorrect login details");
+                } else {
+                    String url = response.encodeRedirectURL(request.getContextPath() + "/NewBook");
+                    response.sendRedirect(url);
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-            out.println("(hits: " + ++counter + ")");
-            out.println("<p>");
-            out.println("<img width=\"64px\" height=\"64px\" src=\"" + request.getContextPath().split("//")[0] + "/assets/netscape.gif" + "\" alt=\"netscape\" /> Works best in Netscape&reg; Navigator");
-            out.println("<p>");
-            out.println("</body>");
-            out.println("</html>");
+            result = result.replace("$$$hitcounter", "(hits: " + ++counter + ")");
+            result = result.replace("$$$netscapegif", request.getContextPath().split("//")[0] + "/assets/netscape.gif");
+            
+            out.print(result);
         }
     }
 
