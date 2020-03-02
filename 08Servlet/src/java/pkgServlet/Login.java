@@ -82,17 +82,21 @@ public class Login extends HttpServlet {
             result = result.replace("$$$passval", (p == null ? "" : p));
             
             try {
-                // !!!!!!!!!! UNSAFE OPERATION SQL INJECTION AHEAD !!!!!!!!!!
-                ArrayList<User> s =
-                    (ArrayList<User>) Database.getInstance().getUserWrapper().select("username = '" + u + "' AND password = '" + p + "'");
-                
                 if(u == null || p == null) {
-                    result = result.replace("$$$bottomline", "type in username and password");
-                } else if (s.isEmpty()) {
-                    result = result.replace("$$$bottomline", "incorrect login details");
+                    result = result.replace("$$$bottomline", "type in username and password"); 
+                } else if(u.isEmpty() || p.isEmpty()) {
+                    result = result.replace("$$$bottomline", "type in username and password"); 
                 } else {
-                    String url = response.encodeRedirectURL(request.getContextPath() + "/NewBook");
-                    response.sendRedirect(url);
+                    // !!!!!!!!!! UNSAFE OPERATION SQL INJECTION AHEAD !!!!!!!!!!
+                    ArrayList<User> s =
+                        (ArrayList<User>) Database.getInstance().getUserWrapper().select("username = '" + u + "' AND password = '" + p + "'");
+
+                    if (s.isEmpty()) {
+                        result = result.replace("$$$bottomline", "incorrect login details");
+                    } else {
+                        String url = response.encodeRedirectURL(request.getContextPath() + "/NewBook");
+                        response.sendRedirect(url);
+                    }
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);

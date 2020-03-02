@@ -6,6 +6,8 @@
 package pkgData;
 
 import java.io.IOException;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,10 +27,15 @@ public class Database {
     private DatabaseAnnotationWrapper<Book> bookWrapper = null;
     
     private Database() {
-        Properties config = null;
+        Properties config = new Properties();
         try {
             config.load(this.getClass().getResourceAsStream("config.properties"));
         } catch (IOException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
+        } catch (SQLException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
         dCH = new DatabaseConnectionHandler(config.getProperty("jdbcUri"));

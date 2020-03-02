@@ -16,10 +16,13 @@ import xyz.joestr.dbwrapper.annotations.WrappedTable;
 public class User {
     
     @WrappedField(name = "username")
-    private String username = null;
+    String username = null;
     @WrappedField(name = "password")
-    private String password = null;
+    String password = null;
 
+    public User() {
+    }
+    
     public User(String username, String password) {
         this.username = username;
         this.password = password;

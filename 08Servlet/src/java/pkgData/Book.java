@@ -5,6 +5,10 @@
  */
 package pkgData;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import xyz.joestr.dbwrapper.DatabaseWrapable;
 import xyz.joestr.dbwrapper.annotations.WrappedField;
 import xyz.joestr.dbwrapper.annotations.WrappedTable;
 
@@ -12,16 +16,15 @@ import xyz.joestr.dbwrapper.annotations.WrappedTable;
  *
  * @author Joel
  */
-@WrappedTable(name = "books")
-public class Book {
+public class Book implements DatabaseWrapable {
     
-    @WrappedField(name = "id")
-    private int id = 0;
-    @WrappedField(name = "author")
-    private String author = null;
-    @WrappedField(name = "title")
-    private String title = null;
+    int id = 0;
+    String author = null;
+    String title = null;
 
+    public Book() {
+    }
+    
     public Book(int id, String author, String title) {
         this.id = id;
         this.author = author;
@@ -50,6 +53,29 @@ public class Book {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Override
+    public String databaseTableName() {
+        return "books";
+    }
+
+    @Override
+    public Collection<String> databaseColumnNames() {
+        List<String> result = new ArrayList<>();
+        result.add("id");
+        result.add("author");
+        result.add("title");
+        return result;
+    }
+
+    @Override
+    public Collection<String> classFieldNames() {
+        List<String> result = new ArrayList<>();
+        result.add("id");
+        result.add("author");
+        result.add("title");
+        return result;
     }
     
     
