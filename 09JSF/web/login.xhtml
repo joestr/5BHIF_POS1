@@ -7,24 +7,42 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/mobile/1.5.0-rc1/jquery.mobile-1.5.0-rc1.min.js"></script>
     <link rel="stylesheet" type="text/css" src="https://code.jquery.com/mobile/1.5.0-rc1/jquery.mobile-1.5.0-rc1.min.css" />
-	<title>JSF - Login</title>
+	<title>KH Altona - Login</title>
 </h:head>
 <h:body>
-	<h:form>
-		<h1>JSF - Login</h1>
-		<h:outputText value="Username" />
-        <h:selectOneMenu id="username" value="#{login.user}">
-            <f:selectItems value="#{login.usernames}" />
-        </h:selectOneMenu>
-        <!--<h:inputText id="username" value="#{login.user}"></h:inputText>-->
-		<br></br>
-		<h:outputText value="Password" />
-		<h:inputSecret id="password" value="#{login.pwd}"></h:inputSecret>
-		<br></br>
-		<h:commandButton
-            action="#{login.validateUsernamePassword}"
-			value="Login"
-        ></h:commandButton>
-	</h:form>
+    <h1>KH Altona - Login</h1>
+    <hr />
+    <h:panelGroup rendered="#{login.validLogin}">
+        <h:form><h:commandLink action="admin?faces-redirect=true" value="Admin panel" /></h:form>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{!login.validLogin}">
+        <h:form>
+            <table style="border: none;">
+                <tbody>
+                    <tr>
+                        <td><h:outputText value="Username: " /></td>
+                        <td>
+                            <h:selectOneMenu id="username" value="#{login.user}">
+                                <f:selectItems value="#{login.usernames}" />
+                            </h:selectOneMenu>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><h:outputText value="Password: " /></td>
+                        <td><h:inputSecret id="password" value="#{login.pwd}"></h:inputSecret></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <h:commandButton
+                                action="#{login.validateUsernamePassword}"
+                                value="Login"
+                            ></h:commandButton>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </h:form>
+    </h:panelGroup>
 </h:body>
 </html>

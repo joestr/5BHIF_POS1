@@ -5,12 +5,18 @@
  */
 package pkgData;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.bean.ManagedBean;
 import xyz.joestr.dbwrapper.annotations.WrappedTable;
 
 /**
  *
  * @author Joel
  */
+@ManagedBean
 @WrappedTable(name = "books")
 public class Book {
     

@@ -29,6 +29,7 @@ public class Login implements Serializable {
 	private String pwd;
 	private String msg;
 	private String user;
+    private boolean validLogin;
 
 	public String getPwd() {
 		return pwd;
@@ -54,13 +55,23 @@ public class Login implements Serializable {
 		this.user = user;
 	}
 
+    public boolean isValidLogin() {
+        return validLogin;
+    }
+
+    public void setValidLogin(boolean validLogin) {
+        this.validLogin = validLogin;
+    }
+    
+    
+
 	//validate login
 	public String validateUsernamePassword() {
-
-		boolean valid = user.equalsIgnoreCase(pwd);
+        
+        validLogin = false;
         
         try {
-            valid = Database.getInstance().getUserWrapper().select().stream().anyMatch((u) -> {
+            validLogin = Database.getInstance().getUserWrapper().select().stream().anyMatch((u) -> {
                 return u.getUsername().equals(user)
                     && u.getPassword().equals(pwd);
             });
@@ -68,28 +79,36 @@ public class Login implements Serializable {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-		if (valid) {
+		if (validLogin) {
             HttpSession session = SessionUtils.getSession();
 			session.setAttribute("username", user);
-			return "adminbooks?faces-redirect=true";
+			return "admin?faces-redirect=true";
 		} else {
 			FacesContext.getCurrentInstance().addMessage(
                 null,
                 new FacesMessage(
                     FacesMessage.SEVERITY_WARN,
                     "Incorrect Username and Passowrd",
-                    "Please enter correct username and Password"
+                    null
                 )
             );
-			return "login";
+			return "login?faces-redirect=true";
 		}
 	}
 
 	//logout event, invalidate session
 	public String logout() {
         HttpSession session = SessionUtils.getSession();
-			session.invalidate();
-		return "login";
+		session.invalidate();
+        FacesContext.getCurrentInstance().addMessage(
+            null,
+            new FacesMessage(
+                FacesMessage.SEVERITY_INFO,
+                "Logout successful",
+                null
+            )
+        );
+		return "login?faces-redirect=true";
 	}
     
     public ArrayList<String> getUsernames() {
